@@ -61,7 +61,7 @@ A modern, responsive web app for discovering and creating cocktails. Built with 
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-name/shakeitup.git
+git clone https://github.com/fgmcolas/ShakeItUp.git
 cd shakeitup
 
 # Backend
