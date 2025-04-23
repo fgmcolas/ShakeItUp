@@ -1,0 +1,83 @@
+<script setup>
+import { useRoute, useRouter, RouterLink } from 'vue-router';
+import { Menu, X } from 'lucide-vue-next';
+import { useSidebarStore } from '../stores/sidebar';
+import { useAuth } from '../composables/useAuth';
+
+const sidebar = useSidebarStore();
+const route = useRoute();
+const router = useRouter();
+const auth = useAuth();
+
+const linkClass = (path) =>
+  `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path
+    ? 'bg-cocktail-glow-light/30 font-semibold text-white'
+    : 'text-white'
+  }`;
+
+const handleLogout = () => {
+  auth.logout();
+  router.push('/login');
+};
+</script>
+
+<template>
+  <div>
+    <!-- Burger -->
+    <button v-if="!sidebar.isOpen"
+      class="md:hidden fixed top-4 left-4 z-50 p-2 bg-cocktail-glow text-white border rounded shadow"
+      @click="sidebar.open">
+      <Menu size="20" />
+    </button>
+
+    <!-- Sidebar -->
+    <aside
+      :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:flex`">
+
+      <!-- Top -->
+      <div>
+        <!-- Logo -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-800">
+          <RouterLink :to="auth.user.value ? '/' : '/login'" @click="sidebar.close">
+            <h1
+              class="text-2xl font-bold text-white bg-cocktail-glow px-4 py-1 rounded transition hover:bg-cocktail-glow-light">
+              ShakeItUp 🍸
+            </h1>
+          </RouterLink>
+          <button class="md:hidden p-2 text-white" @click="sidebar.close">
+            <X size="20" />
+          </button>
+        </div>
+
+        <!-- Nav -->
+        <nav class="p-4 space-y-2">
+          <RouterLink to="/cocktails" :class="linkClass('/cocktails')">
+            🍹 All Cocktails
+          </RouterLink>
+          <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
+            🧂 Ingredients
+          </RouterLink>
+          <RouterLink v-if="auth.user.value" to="/my-bar" :class="linkClass('/my-bar')">
+            🧑‍🍳 My Creations
+          </RouterLink>
+        </nav>
+      </div>
+
+      <!-- Bottom -->
+      <div class="w-full p-4 border-t border-gray-800 text-sm text-center text-white">
+        <template v-if="auth.user.value">
+          <p class="text-gray-300 mb-1">
+            Logged in as <strong>{{ auth.user.value.username }}</strong>
+          </p>
+          <button @click="handleLogout"
+            class="bg-cocktail-glow px-3 py-1 text-white rounded hover:bg-cocktail-glow-light">
+            Log out
+          </button>
+        </template>
+        <template v-else>
+          <p class="text-gray-500">Not connected</p>
+        </template>
+      </div>
+    </aside>
+  </div>
+</template>
