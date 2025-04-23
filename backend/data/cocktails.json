@@ -1,0 +1,734 @@
+[
+  {
+    "name": "Tropical Breeze",
+    "ingredients": [
+      "Tabasco",
+      "Tomato Juice",
+      "Rum",
+      "Ice",
+      "Tequila",
+      "Lemon Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://cdn.prod.website-files.com/62518cc9e647b71e6848a36c/65b15b278e92f151132eac75_tropical-breeze-teaser.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Sunset Glow",
+    "ingredients": [
+      "Cream",
+      "Gin",
+      "Sugar Syrup",
+      "Tomato Juice",
+      "Ice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3735.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Ocean Drive",
+    "ingredients": [
+      "Tequila",
+      "Lemon Juice",
+      "Whiskey",
+      "Worcestershire Sauce",
+      "Triple Sec"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6864.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Midnight Mule",
+    "ingredients": [
+      "Cranberry Juice",
+      "Tomato Juice",
+      "Tabasco",
+      "Maraschino Cherry"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/5049.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Golden Hour",
+    "ingredients": [
+      "Tequila",
+      "Mint",
+      "Grenadine",
+      "Worcestershire Sauce",
+      "Cranberry Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3214.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Electric Lemonade",
+    "ingredients": [
+      "Orange Juice",
+      "Coconut Cream",
+      "Pepper",
+      "Grenadine"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9245.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Frozen Flame",
+    "ingredients": [
+      "Vodka",
+      "Salt",
+      "Worcestershire Sauce",
+      "Lemon Juice",
+      "Triple Sec",
+      "Grenadine"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3556.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Mystic Mojito",
+    "ingredients": [
+      "Club Soda",
+      "Tomato Juice",
+      "Tabasco",
+      "Coca-Cola",
+      "Cream"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3333.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Summer Sky",
+    "ingredients": [
+      "Lime Juice",
+      "Maraschino Cherry",
+      "Rum",
+      "Tonic Water",
+      "Triple Sec",
+      "Tequila"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9069.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Velvet Touch",
+    "ingredients": [
+      "Coca-Cola",
+      "Lemon Juice",
+      "Pepper",
+      "Tabasco",
+      "Maraschino Cherry",
+      "Coconut Cream"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/7318.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Twilight Kiss",
+    "ingredients": [
+      "Pineapple Juice",
+      "Tabasco",
+      "Grenadine",
+      "Whiskey",
+      "Rum",
+      "Salt"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/7751.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Firefly",
+    "ingredients": [
+      "Orange Juice",
+      "Whiskey",
+      "Lemon Juice",
+      "Pepper",
+      "Vodka",
+      "Pineapple Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/7896.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Citrus Burst",
+    "ingredients": [
+      "Cranberry Juice",
+      "Worcestershire Sauce",
+      "Grenadine",
+      "Salt",
+      "Cream"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/1847.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Peachy Keen",
+    "ingredients": [
+      "Coca-Cola",
+      "Coffee",
+      "Sugar Syrup",
+      "Grenadine",
+      "Whiskey"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9081.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Berry Blush",
+    "ingredients": [
+      "Lime Juice",
+      "Pepper",
+      "Coconut Cream",
+      "Sugar Syrup"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8499.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Caribbean Dream",
+    "ingredients": [
+      "Whiskey",
+      "Rum",
+      "Coca-Cola"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/1260.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Neutral",
+    "officialRecipe": false
+  },
+  {
+    "name": "Mint Mirage",
+    "ingredients": [
+      "Mint",
+      "Orange Juice",
+      "Rum",
+      "Coconut Cream",
+      "Worcestershire Sauce"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6731.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Coconut Chill",
+    "ingredients": [
+      "Tequila",
+      "Ice",
+      "Vodka",
+      "Mint",
+      "Coca-Cola",
+      "Sugar Syrup"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8630.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Passion Storm",
+    "ingredients": [
+      "Whiskey",
+      "Club Soda",
+      "Maraschino Cherry",
+      "Vodka"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3410.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Lazy Lagoon",
+    "ingredients": [
+      "Tomato Juice",
+      "Whiskey",
+      "Mint",
+      "Coca-Cola"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8169.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Honeycomb Highball",
+    "ingredients": [
+      "Sugar Syrup",
+      "Gin",
+      "Ice",
+      "Cranberry Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8099.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Polar Bear",
+    "ingredients": [
+      "Orange Juice",
+      "Coca-Cola",
+      "Tomato Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/2127.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Jungle Jive",
+    "ingredients": [
+      "Orange Juice",
+      "Salt",
+      "Worcestershire Sauce",
+      "Triple Sec"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6128.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Mango Magic",
+    "ingredients": [
+      "Tonic Water",
+      "Cream",
+      "Tequila",
+      "Grenadine",
+      "Lime Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8306.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Silent Storm",
+    "ingredients": [
+      "Vodka",
+      "Ice",
+      "Rum",
+      "Orange Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/4903.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Lava Lamp",
+    "ingredients": [
+      "Gin",
+      "Coconut Cream",
+      "Rum"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6590.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Candy Crush",
+    "ingredients": [
+      "Salt",
+      "Sugar Syrup",
+      "Orange Juice",
+      "Tequila"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9232.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Frosted Flirt",
+    "ingredients": [
+      "Tonic Water",
+      "Coca-Cola",
+      "Sugar Syrup",
+      "Orange Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/3006.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Sunbeam",
+    "ingredients": [
+      "Salt",
+      "Tomato Juice",
+      "Club Soda",
+      "Tonic Water",
+      "Cranberry Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/5162.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Island Whisper",
+    "ingredients": [
+      "Cranberry Juice",
+      "Ice",
+      "Salt",
+      "Vodka",
+      "Worcestershire Sauce",
+      "Grenadine"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9374.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Cherry Pop",
+    "ingredients": [
+      "Tomato Juice",
+      "Cream",
+      "Cranberry Juice",
+      "Coffee"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6219.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Blue Breeze",
+    "ingredients": [
+      "Rum",
+      "Lemon Juice",
+      "Mint",
+      "Whiskey",
+      "Coca-Cola"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6130.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Cinnamon Sunrise",
+    "ingredients": [
+      "Rum",
+      "Pineapple Juice",
+      "Maraschino Cherry",
+      "Cream"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9206.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Apple Spark",
+    "ingredients": [
+      "Vodka",
+      "Orange Juice",
+      "Ice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/4185.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Vanilla Rush",
+    "ingredients": [
+      "Orange Juice",
+      "Lime Juice",
+      "Grenadine",
+      "Vodka"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9739.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Zesty Zing",
+    "ingredients": [
+      "Club Soda",
+      "Coconut Cream",
+      "Tonic Water"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8395.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Tiki Tonic",
+    "ingredients": [
+      "Rum",
+      "Tequila",
+      "Orange Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/2656.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Berry Breeze",
+    "ingredients": [
+      "Coconut Cream",
+      "Mint",
+      "Tonic Water",
+      "Coca-Cola"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6679.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Green Garden",
+    "ingredients": [
+      "Vodka",
+      "Tequila",
+      "Orange Juice",
+      "Cranberry Juice",
+      "Cream",
+      "Gin"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9387.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Purple Haze",
+    "ingredients": [
+      "Club Soda",
+      "Tonic Water",
+      "Ice",
+      "Tomato Juice",
+      "Grenadine"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/7340.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Tangerine Tease",
+    "ingredients": [
+      "Vodka",
+      "Tequila",
+      "Sugar Syrup",
+      "Whiskey",
+      "Tonic Water",
+      "Worcestershire Sauce"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/2455.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Sweet",
+    "officialRecipe": false
+  },
+  {
+    "name": "Golden Bell",
+    "ingredients": [
+      "Lemon Juice",
+      "Tabasco",
+      "Club Soda",
+      "Vodka",
+      "Tequila",
+      "Pepper"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9354.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Snowcap",
+    "ingredients": [
+      "Club Soda",
+      "Pineapple Juice",
+      "Salt"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6635.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Sparkling Sunset",
+    "ingredients": [
+      "Lemon Juice",
+      "Tonic Water",
+      "Club Soda",
+      "Ice",
+      "Orange Juice",
+      "Grenadine"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9220.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Lime Light",
+    "ingredients": [
+      "Coffee",
+      "Triple Sec",
+      "Mint",
+      "Coconut Cream",
+      "Lime Juice",
+      "Ice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/4367.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Ocean Mist",
+    "ingredients": [
+      "Cranberry Juice",
+      "Worcestershire Sauce",
+      "Coca-Cola",
+      "Triple Sec",
+      "Maraschino Cherry"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/5971.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Amber Ice",
+    "ingredients": [
+      "Worcestershire Sauce",
+      "Pineapple Juice",
+      "Whiskey"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/8183.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Moonlight Mojito",
+    "ingredients": [
+      "Coconut Cream",
+      "Pineapple Juice",
+      "Cream",
+      "Grenadine",
+      "Lime Juice",
+      "Maraschino Cherry"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/6170.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Fruity",
+    "officialRecipe": false
+  },
+  {
+    "name": "Strawberry Fields",
+    "ingredients": [
+      "Grenadine",
+      "Ice",
+      "Pepper",
+      "Worcestershire Sauce"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/9124.jpg",
+    "alcoholic": false,
+    "flavorStyle": "Sweet",
+    "officialRecipe": true
+  },
+  {
+    "name": "Neon Nectar",
+    "ingredients": [
+      "Club Soda",
+      "Tabasco",
+      "Tequila",
+      "Cranberry Juice"
+    ],
+    "instructions": "Mix all ingredients and serve over ice. Garnish with your choice.",
+    "image": "https://www.thecocktaildb.com/images/media/drink/1897.jpg",
+    "alcoholic": true,
+    "flavorStyle": "Fruity",
+    "officialRecipe": true
+  }
+]
