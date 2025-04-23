@@ -1,0 +1,20 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+body {
+  @apply bg-night text-mist font-cocktail;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  @apply text-cocktail-glow;
+}
+
+button {
+  @apply bg-cocktail-glow hover:bg-cocktail-glow-light text-white font-semibold px-4 py-2 rounded transition;
+}
