@@ -131,8 +131,6 @@ shakeitup/
 - [x] Backend API + MongoDB support
 - [ ] Favoriting cocktails
 - [ ] Editing/removing your creations
-- [ ] Admin approval for official recipes
-- [ ] Dark mode toggle
 
 ---
 
