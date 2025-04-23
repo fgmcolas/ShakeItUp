@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# dotenv files
+*.env
+
+# build
+frontend/build/
+frontend/dist/
+
+# logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VSCode settings
+.vscode/
+
+# test coverage
+coverage/
+
+# generated files
+*.zip
+*.tar.gz
