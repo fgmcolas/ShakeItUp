@@ -1,15 +1,16 @@
 <script setup>
-import { onMounted, ref, computed, onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, ref, computed } from 'vue';
 import { useAuth } from '../composables/useAuth';
 import { useSidebarStore } from '../stores/sidebar';
 
-const { user, loadUserFromStorage } = useAuth();
+const auth = useAuth();
 const sidebar = useSidebarStore();
 
 const isMobile = ref(window.innerWidth < 768);
 const updateIsMobile = () => {
     isMobile.value = window.innerWidth < 768;
 };
+
 window.addEventListener('resize', updateIsMobile);
 onBeforeUnmount(() => window.removeEventListener('resize', updateIsMobile));
 
@@ -19,16 +20,12 @@ const paddingClass = computed(() => {
     }
     return 'pl-[calc(256px+1.5rem)] pr-6';
 });
-
-onMounted(() => {
-    loadUserFromStorage();
-});
 </script>
 
 <template>
     <div :class="`flex items-center justify-center h-screen ${paddingClass}`">
         <h1 class="text-2xl font-bold text-pink-400">
-            Welcome, {{ user?.username || 'Guest' }}!
+            Welcome, {{ auth.user?.username || 'Guest' }}!
         </h1>
     </div>
 </template>
