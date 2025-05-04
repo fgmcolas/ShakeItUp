@@ -36,11 +36,15 @@ const routes = [
         component: Ingredients,
     },
     {
+        path: '/favorites',
+        component: () => import('../views/Favorites.vue'),
+        meta: { requiresAuth: true },
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/login',
     },
 ];
-
 
 const router = createRouter({
     history: createWebHistory(),
