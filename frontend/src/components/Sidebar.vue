@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { Menu, X } from 'lucide-vue-next';
 import { useSidebarStore } from '../stores/sidebar';
@@ -8,6 +9,9 @@ const sidebar = useSidebarStore();
 const route = useRoute();
 const router = useRouter();
 const auth = useAuth();
+
+// ✅ Vérifie si un utilisateur avec un ID est connecté
+const isLoggedIn = computed(() => !!auth.user?.value?.id);
 
 const linkClass = (path) =>
   `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path
@@ -31,14 +35,12 @@ const handleLogout = () => {
     </button>
 
     <!-- Sidebar -->
-    <aside
-      :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:flex`">
-
+    <aside :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'
+      } md:translate-x-0 md:flex`">
       <!-- Top -->
       <div>
-        <!-- Logo -->
         <div class="flex items-center justify-between p-6 border-b border-gray-800">
-          <RouterLink :to="auth.user.value ? '/' : '/login'" @click="sidebar.close">
+          <RouterLink :to="isLoggedIn ? '/' : '/login'" @click="sidebar.close">
             <h1
               class="text-2xl font-bold text-white bg-cocktail-glow px-4 py-1 rounded transition hover:bg-cocktail-glow-light">
               ShakeItUp 🍸
@@ -57,15 +59,18 @@ const handleLogout = () => {
           <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
             🧂 Ingredients
           </RouterLink>
-          <RouterLink v-if="auth.user.value" to="/my-bar" :class="linkClass('/my-bar')">
+          <RouterLink v-if="isLoggedIn" to="/my-bar" :class="linkClass('/my-bar')">
             🧑‍🍳 My Creations
+          </RouterLink>
+          <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')">
+            ❤️ Favorites
           </RouterLink>
         </nav>
       </div>
 
       <!-- Bottom -->
       <div class="w-full p-4 border-t border-gray-800 text-sm text-center text-white">
-        <template v-if="auth.user.value">
+        <template v-if="isLoggedIn">
           <p class="text-gray-300 mb-1">
             Logged in as <strong>{{ auth.user.value.username }}</strong>
           </p>
