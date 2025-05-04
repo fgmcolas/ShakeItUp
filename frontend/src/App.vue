@@ -1,20 +1,26 @@
 <template>
-  <div class="flex min-h-screen">
+  <div class="flex">
     <Sidebar />
-    <div class="flex-grow">
-      <router-view />
-    </div>
+
+    <main class="flex-1 p-4">
+      <RouterView />
+    </main>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import Sidebar from './components/Sidebar.vue';
+import { useSidebarPadding } from './composables/useSidebarPadding';
 import { useAuth } from './composables/useAuth';
 
-const { loadUserFromStorage } = useAuth();
+useSidebarPadding();
 
-onMounted(() => {
-  loadUserFromStorage();
-});
+const auth = useAuth();
+console.log("User on app load:", auth.user);
 </script>
+
+<style>
+body {
+  margin: 0;
+}
+</style>
