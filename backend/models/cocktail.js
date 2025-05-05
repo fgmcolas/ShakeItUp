@@ -1,16 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const cocktailSchema = new mongoose.Schema({
-    id: String,
-    name: String,
-    ingredients: [String],
-    instructions: String,
-    image: String,
-    alcoholType: String,
-    flavorStyle: String,
-    isAlcoholic: Boolean,
-    isOfficial: Boolean
-}, { timestamps: true });
+const ratingSchema = new mongoose.Schema(
+    {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        score: { type: Number, required: true, min: 1, max: 5 },
+        comment: { type: String },
+    },
+    { timestamps: true }
+);
 
-const Cocktail = mongoose.model('Cocktail', cocktailSchema);
-export default Cocktail;
+const cocktailSchema = new mongoose.Schema(
+    {
+        name: { type: String, required: true },
+        ingredients: [String],
+        alcoholic: Boolean,
+        officialRecipe: Boolean,
+        flavorStyle: String,
+        image: String,
+        ratings: [ratingSchema],
+    },
+    { timestamps: true }
+);
+
+export default mongoose.model("Cocktail", cocktailSchema);
