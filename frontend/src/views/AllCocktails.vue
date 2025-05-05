@@ -14,6 +14,7 @@ const officialOnly = ref(false);
 const selectedAlcohol = ref('');
 const selectedFlavor = ref('');
 const selectedIngredient = ref('');
+const sortOption = ref('');
 
 const alcoholTypes = ['Gin', 'Rum', 'Tequila', 'Vodka', 'Whiskey', 'Triple Sec'];
 const flavorStyles = ['Sweet', 'Spicy', 'Fruity', 'Bitter', 'Citrusy'];
@@ -37,7 +38,7 @@ const fetchCocktails = async () => {
 onMounted(fetchCocktails);
 
 const filteredCocktails = computed(() => {
-    return cocktails.value.filter(cocktail => {
+    let results = cocktails.value.filter(cocktail => {
         const query = search.value.toLowerCase();
 
         const matchesSearch =
@@ -75,6 +76,24 @@ const filteredCocktails = computed(() => {
             matchesIngredient
         );
     });
+
+    // Tri
+    switch (sortOption.value) {
+        case 'name-asc':
+            results.sort((a, b) => a.name.localeCompare(b.name));
+            break;
+        case 'name-desc':
+            results.sort((a, b) => b.name.localeCompare(a.name));
+            break;
+        case 'rating-desc':
+            results.sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+            break;
+        case 'rating-asc':
+            results.sort((a, b) => (a.averageRating ?? 0) - (b.averageRating ?? 0));
+            break;
+    }
+
+    return results;
 });
 
 const resetFilters = () => {
@@ -84,6 +103,7 @@ const resetFilters = () => {
     selectedAlcohol.value = '';
     selectedFlavor.value = '';
     selectedIngredient.value = '';
+    sortOption.value = '';
 };
 </script>
 
@@ -128,6 +148,14 @@ const resetFilters = () => {
                 </option>
             </select>
 
+            <select v-model="sortOption" class="p-2 rounded bg-[#1e1e1e] text-white">
+                <option value="">-- Sort By --</option>
+                <option value="name-asc">Name (A–Z)</option>
+                <option value="name-desc">Name (Z–A)</option>
+                <option value="rating-desc">Rating (High to Low)</option>
+                <option value="rating-asc">Rating (Low to High)</option>
+            </select>
+
             <button @click="resetFilters" class="px-4 py-2 rounded bg-gray-600 text-white hover:bg-gray-500">
                 Reset Filters
             </button>
@@ -144,7 +172,7 @@ const resetFilters = () => {
 
         <!-- Cocktails Grid -->
         <div class="px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 slg:grid-cols-4 xxl:grid-cols-5 gap-6">
-            <CocktailCard v-for="(cocktail, idx) in filteredCocktails" :key="idx" :cocktail="cocktail" />
+            <CocktailCard v-for="cocktail in filteredCocktails" :key="cocktail._id" :cocktail="cocktail" />
         </div>
     </div>
 </template>
