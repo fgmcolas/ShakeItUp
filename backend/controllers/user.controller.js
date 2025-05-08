@@ -18,7 +18,15 @@ export const getUserById = async (req, res) => {
 
 export const updateFavorites = async (req, res) => {
     const { id } = req.params;
+    if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ message: "Missing or invalid request body." });
+    }
+
     const { cocktailId } = req.body;
+
+    if (!cocktailId) {
+        return res.status(400).json({ message: "cocktailId is required." });
+    }
 
     try {
         const user = await User.findById(id);
