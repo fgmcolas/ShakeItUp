@@ -5,17 +5,13 @@ import FavoriteButton from './FavoriteButton.vue';
 import RatingDisplay from './RatingDisplay.vue';
 import RatingModal from './RatingModal.vue';
 import { useAuth } from '../composables/useAuth';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({ cocktail: Object });
 const auth = useAuth();
+const router = useRouter();
 
-const getImageSrc = () => {
-    const img = props.cocktail.image;
-    if (!img) return '/default-cocktail.jpg';
-    return img.startsWith('/uploads') ? `http://localhost:5000${img}` : img;
-};
-
-const imageSrc = ref(getImageSrc());
+const imageSrc = ref(props.cocktail.image || '/default-cocktail.jpg');
 const isRatingModalOpen = ref(false);
 const ratingDisplayRef = ref(null);
 
@@ -27,13 +23,16 @@ const handleRatingSubmitted = () => {
     isRatingModalOpen.value = false;
     ratingDisplayRef.value?.refresh?.();
 };
+
+const goToDetails = () => {
+    router.push(`/cocktails/${props.cocktail._id}`);
+};
 </script>
 
 <template>
     <div class="relative bg-[#1e1e1e] rounded-lg shadow-lg overflow-hidden hover:bg-[#2a2a2a] transition duration-200">
-
         <!-- Image -->
-        <div class="w-full h-40 overflow-hidden bg-black">
+        <div class="w-full h-40 overflow-hidden bg-black cursor-pointer" @click="goToDetails">
             <img :src="imageSrc" :alt="cocktail.name" class="w-full h-full object-cover" @error="handleImageError" />
         </div>
 
