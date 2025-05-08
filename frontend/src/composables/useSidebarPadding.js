@@ -1,4 +1,3 @@
-// src/composables/useSidebarPadding.js
 import { ref, computed, onBeforeUnmount } from 'vue';
 import { useSidebarStore } from '../stores/sidebar';
 
