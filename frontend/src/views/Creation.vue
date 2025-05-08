@@ -76,15 +76,7 @@ const submitCocktail = async () => {
     fd.append('ingredients', JSON.stringify(selectedIngredients.value));
     if (imageFile.value) {
         fd.append('image', imageFile.value);
-    }
-
-    console.log('FORM DATA', {
-        name: form.value.name,
-        instructions: form.value.instructions,
-        alcoholic: form.value.alcoholic,
-        ingredients: selectedIngredients.value,
-        image: imageFile.value?.name
-    });
+    };
 
     try {
         const res = await fetch('http://localhost:5000/api/cocktails', {
