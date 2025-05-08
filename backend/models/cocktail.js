@@ -11,7 +11,8 @@ const ratingSchema = new mongoose.Schema(
 
 const cocktailSchema = new mongoose.Schema(
     {
-        name: { type: String, required: true },
+        name: { type: String, required: true, unique: true },
+        instructions: { type: String },
         ingredients: [String],
         alcoholic: Boolean,
         officialRecipe: Boolean,
