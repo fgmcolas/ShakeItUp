@@ -11,7 +11,11 @@ const props = defineProps({ cocktail: Object });
 const auth = useAuth();
 const router = useRouter();
 
-const imageSrc = ref(props.cocktail.image || '/default-cocktail.jpg');
+// ✅ Utiliser `cocktail.image` directement (déjà une URL complète)
+const imageSrc = ref(
+    props.cocktail.image ? props.cocktail.image : '/default-cocktail.jpg'
+);
+
 const isRatingModalOpen = ref(false);
 const ratingDisplayRef = ref(null);
 
