@@ -21,7 +21,7 @@ const token = ref(localStorage.getItem('token') || null);
 
 const login = (userData) => {
     if (!userData?.user || !userData?.token) {
-        console.warn('❌ Invalid login data:', userData);
+        console.warn('Invalid login data:', userData);
         return;
     }
 
