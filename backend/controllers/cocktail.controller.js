@@ -5,8 +5,6 @@ export const createCocktail = async (req, res) => {
         const { name, instructions, alcoholic } = req.body;
         const ingredients = JSON.parse(req.body.ingredients || '[]');
 
-        console.log('IMAGE FILE:', req.file);
-
         const image = req.file ? `http://localhost:5000/${req.file.path.replace(/\\/g, '/')}` : null;
 
         const newCocktail = new Cocktail({
