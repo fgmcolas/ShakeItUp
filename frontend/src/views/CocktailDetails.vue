@@ -19,7 +19,7 @@ const fetchCocktail = async () => {
         const data = await res.json();
         cocktail.value = data;
 
-        // Si une image valide est présente, on l'utilise
+        // If a valid image is present, use it
         if (data.image && data.image.trim() !== '') {
             imageSrc.value = data.image.trim();
         }
@@ -40,16 +40,16 @@ onMounted(fetchCocktail);
         <div v-if="error" class="text-red-500">{{ error }}</div>
 
         <div v-else-if="cocktail" class="grid grid-cols-1 xl:grid-cols-[250px_1fr_300px] gap-8 h-full">
-            <!-- Colonne gauche : Favoris + Score + Ingrédients -->
+            <!-- Favorites + Score + Ingredients -->
             <div class="flex flex-col space-y-10">
-                <!-- Bloc Favori + Score -->
+                <!-- Favorite + Score block -->
                 <div class="bg-gray-900 p-4 rounded-xl shadow-lg flex flex-col items-center space-y-4">
                     <FavoriteButton :cocktailId="cocktail._id"
                         class="w-10 h-10 hover:scale-110 transition-transform duration-200" />
                     <RatingDisplay :cocktailId="cocktail._id" class="text-2xl font-bold text-yellow-400" />
                 </div>
 
-                <!-- Ingrédients -->
+                <!-- Ingredients -->
                 <div class="flex-1">
                     <h2 class="text-2xl font-semibold mb-2">Ingredients</h2>
                     <ul class="list-disc list-inside space-y-1">
@@ -58,12 +58,12 @@ onMounted(fetchCocktail);
                 </div>
             </div>
 
-            <!-- Colonne centrale : Titre, Image, Instructions -->
+            <!-- Center column: Title, Image, Instructions -->
             <div class="flex flex-col justify-start max-w-4xl mx-auto w-full space-y-8">
-                <!-- Titre -->
+                <!-- Title -->
                 <h1 class="text-4xl font-bold text-center">{{ cocktail.name }}</h1>
 
-                <!-- Image avec fallback -->
+                <!-- Image with fallback -->
                 <div class="flex justify-center">
                     <img :src="imageSrc"
                         :alt="imageSrc === '/default-cocktail.jpg' ? 'Default placeholder image' : 'Cocktail Image'"
@@ -78,9 +78,9 @@ onMounted(fetchCocktail);
                 </div>
             </div>
 
-            <!-- Colonne droite : Commentaires -->
+            <!-- Comments -->
             <div class="pt-6">
-                <h2 class="text-2xl font-semibold mb-4">Commentaires</h2>
+                <h2 class="text-2xl font-semibold mb-4">Comments</h2>
                 <div v-for="(rating, i) in cocktail.ratings" :key="i" class="mb-4 border-b border-gray-700 pb-2">
                     <p class="font-semibold text-yellow-400">
                         {{ rating.user?.username || 'Anonymous' }} - {{ rating.score }}/5

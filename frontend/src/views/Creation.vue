@@ -97,7 +97,6 @@ const submitCocktail = async () => {
             throw new Error(errorData.message || 'Failed to create cocktail.');
         }
 
-
         success.value = true;
         error.value = '';
         form.value = { name: '', instructions: '', alcoholic: false };

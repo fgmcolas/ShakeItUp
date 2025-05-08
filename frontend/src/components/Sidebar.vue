@@ -10,7 +10,6 @@ const route = useRoute();
 const router = useRouter();
 const auth = useAuth();
 
-// ✅ Vérifie si un utilisateur avec un ID est connecté
 const isLoggedIn = computed(() => !!auth.user?.value?.id);
 
 const linkClass = (path) =>
