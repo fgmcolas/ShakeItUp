@@ -2,7 +2,6 @@ import { ref, computed, onBeforeUnmount } from 'vue';
 import { useSidebarStore } from '../stores/sidebar';
 
 export function useSidebarPadding() {
-    console.log('✅ useSidebarPadding loaded');
     const sidebar = useSidebarStore();
     const isMobile = ref(false);
 
