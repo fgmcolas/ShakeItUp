@@ -3,7 +3,6 @@ import Login from '../views/Login.vue';
 import Register from '../views/Register.vue';
 import Dashboard from '../views/Dashboard.vue';
 import AllCocktails from '../views/AllCocktails.vue';
-import MyBar from '../views/MyBar.vue';
 import Ingredients from '../views/Ingredients.vue';
 
 const routes = [
@@ -27,9 +26,8 @@ const routes = [
         component: AllCocktails,
     },
     {
-        path: '/my-bar',
-        component: MyBar,
-        meta: { requiresAuth: true },
+        path: '/create',
+        component: () => import('../views/Creation.vue')
     },
     {
         path: '/ingredients',
