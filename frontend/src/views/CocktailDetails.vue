@@ -19,7 +19,6 @@ const fetchCocktail = async () => {
         const data = await res.json();
         cocktail.value = data;
 
-        // If a valid image is present, use it
         if (data.image && data.image.trim() !== '') {
             imageSrc.value = data.image.trim();
         }
