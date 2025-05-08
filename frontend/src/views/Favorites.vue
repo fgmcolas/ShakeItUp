@@ -12,9 +12,6 @@ const cocktails = ref([]);
 const error = ref('');
 
 onMounted(async () => {
-    console.log('auth.user:', auth.user.value);
-    console.log('auth.token:', auth.token.value);
-
     if (!auth.user.value?.id || !auth.token.value) {
         error.value = 'User not authenticated.';
         loading.value = false;
@@ -29,7 +26,6 @@ onMounted(async () => {
         });
 
         const data = await res.json();
-        console.log('Fetched favorites:', data.favorites);
         cocktails.value = data.favorites || [];
     } catch (err) {
         console.error('Failed to load favorites:', err);
