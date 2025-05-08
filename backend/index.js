@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,6 +18,8 @@ import userRoutes from "./routes/user.routes.js";
 import ratingRoutes from "./routes/rating.routes.js";
 
 const app = express();
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(cors({
     origin: "http://localhost:5173",
