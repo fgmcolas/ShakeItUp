@@ -9,7 +9,13 @@ import { useAuth } from '../composables/useAuth';
 const props = defineProps({ cocktail: Object });
 const auth = useAuth();
 
-const imageSrc = ref(props.cocktail.image || '/default-cocktail.jpg');
+const getImageSrc = () => {
+    const img = props.cocktail.image;
+    if (!img) return '/default-cocktail.jpg';
+    return img.startsWith('/uploads') ? `http://localhost:5000${img}` : img;
+};
+
+const imageSrc = ref(getImageSrc());
 const isRatingModalOpen = ref(false);
 const ratingDisplayRef = ref(null);
 
