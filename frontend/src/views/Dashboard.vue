@@ -25,7 +25,7 @@ const paddingClass = computed(() => {
 <template>
     <div :class="`flex items-center justify-center h-screen ${paddingClass}`">
         <h1 class="text-2xl font-bold text-pink-400">
-            Welcome, {{ auth.user?.username || 'Guest' }}!
+            Welcome, {{ auth.user.value.username || 'Guest' }}!
         </h1>
     </div>
 </template>
