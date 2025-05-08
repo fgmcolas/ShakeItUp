@@ -64,6 +64,11 @@ const handleImageUpload = (e) => {
 };
 
 const submitCocktail = async () => {
+    if (!form.value.name.trim()) {
+        error.value = 'Name is required.';
+        return;
+    }
+
     const fd = new FormData();
     fd.append('name', form.value.name);
     fd.append('instructions', form.value.instructions);
@@ -73,13 +78,25 @@ const submitCocktail = async () => {
         fd.append('image', imageFile.value);
     }
 
+    console.log('FORM DATA', {
+        name: form.value.name,
+        instructions: form.value.instructions,
+        alcoholic: form.value.alcoholic,
+        ingredients: selectedIngredients.value,
+        image: imageFile.value?.name
+    });
+
     try {
         const res = await fetch('http://localhost:5000/api/cocktails', {
             method: 'POST',
             body: fd,
         });
 
-        if (!res.ok) throw new Error('Failed to create cocktail.');
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.message || 'Failed to create cocktail.');
+        }
+
 
         success.value = true;
         error.value = '';
