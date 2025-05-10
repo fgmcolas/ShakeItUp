@@ -13,75 +13,74 @@ const auth = useAuth();
 const isLoggedIn = computed(() => !!auth.user?.value?.id);
 
 const linkClass = (path) =>
-  `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path
-    ? 'bg-cocktail-glow-light/30 font-semibold text-white'
-    : 'text-white'
-  }`;
+    `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path
+        ? 'bg-cocktail-glow-light/30 font-semibold text-white'
+        : 'text-white'
+    }`;
 
 const handleLogout = () => {
-  auth.logout();
-  router.push('/login');
+    auth.logout();
+    router.push('/login');
 };
 </script>
 
 <template>
-  <div>
-    <!-- Burger -->
-    <button v-if="!sidebar.isOpen"
-      class="md:hidden fixed top-4 left-4 z-50 p-2 bg-cocktail-glow text-white border rounded shadow"
-      @click="sidebar.open">
-      <Menu size="20" />
-    </button>
+    <div>
+        <!-- Burger -->
+        <button v-if="!sidebar.isOpen"
+            class="md:hidden fixed top-4 left-4 z-50 p-2 bg-cocktail-glow text-white border rounded shadow"
+            @click="sidebar.open">
+            <Menu size="20" />
+        </button>
 
-    <!-- Sidebar -->
-    <aside :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'
-      } md:translate-x-0 md:flex`">
-      <!-- Top -->
-      <div>
-        <div class="flex items-center justify-between p-6 border-b border-gray-800">
-          <RouterLink :to="isLoggedIn ? '/' : '/login'" @click="sidebar.close">
-            <h1
-              class="text-2xl font-bold text-white bg-cocktail-glow px-4 py-1 rounded transition hover:bg-cocktail-glow-light">
-              ShakeItUp 🍸
-            </h1>
-          </RouterLink>
-          <button class="md:hidden p-2 text-white" @click="sidebar.close">
-            <X size="20" />
-          </button>
-        </div>
+        <!-- Sidebar -->
+        <aside
+            :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:flex`">
 
-        <!-- Nav -->
-        <nav class="p-4 space-y-2">
-          <RouterLink to="/cocktails" :class="linkClass('/cocktails')">
-            🍹 All Cocktails
-          </RouterLink>
-          <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
-            🧂 Ingredients
-          </RouterLink>
-          <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')">
-            🍸 Creation
-          </RouterLink>
-          <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')">
-            ❤️ Favorites
-          </RouterLink>
-        </nav>
-      </div>
+            <!-- Top -->
+            <div>
+                <div class="flex items-center justify-between p-6 border-b border-gray-800">
+                    <RouterLink :to="isLoggedIn ? '/' : '/login'" @click="sidebar.close" class="block w-full">
+                        <img src="/ShakeItUp_logo.png" alt="ShakeItUp Logo"
+                            class="w-40 h-auto mx-auto rounded transition duration-200 hover:bg-gray-800/50 p-2" />
+                    </RouterLink>
+                    <button class="md:hidden p-2 text-white" @click="sidebar.close">
+                        <X size="20" />
+                    </button>
+                </div>
 
-      <!-- Bottom -->
-      <div class="w-full p-4 border-t border-gray-800 text-sm text-center text-white">
-        <template v-if="isLoggedIn">
-          <p class="text-gray-300 mb-1">
-            Logged in as <strong>{{ auth.user.value.username }}</strong>
-          </p>
-          <button @click="handleLogout"
-            class="bg-cocktail-glow px-3 py-1 text-white rounded hover:bg-cocktail-glow-light">
-            Log out
-          </button>
-        </template>
-        <template v-else>
-          <p class="text-gray-500">Not connected</p>
-        </template>
-      </div>
-    </aside>
-  </div>
+                <!-- Nav -->
+                <nav class="p-4 space-y-2">
+                    <RouterLink to="/cocktails" :class="linkClass('/cocktails')">
+                        🍹 All Cocktails
+                    </RouterLink>
+                    <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
+                        🧂 Ingredients
+                    </RouterLink>
+                    <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')">
+                        🍸 Creation
+                    </RouterLink>
+                    <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')">
+                        ❤️ Favorites
+                    </RouterLink>
+                </nav>
+            </div>
+
+            <!-- Bottom -->
+            <div class="w-full p-4 border-t border-gray-800 text-sm text-center text-white">
+                <template v-if="isLoggedIn">
+                    <p class="text-gray-300 mb-3">
+                        Logged in as <strong>{{ auth.user.value.username }}</strong>
+                    </p>
+                    <button @click="handleLogout"
+                        class="bg-cocktail-glow px-3 py-1 text-white rounded hover:bg-cocktail-glow-light transition">
+                        Log out
+                    </button>
+                </template>
+                <template v-else>
+                    <p class="text-gray-500">Not connected</p>
+                </template>
+            </div>
+        </aside>
+    </div>
 </template>
