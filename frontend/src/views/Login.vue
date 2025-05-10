@@ -1,5 +1,46 @@
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuth } from '../composables/useAuth';
+import { useSidebarPadding } from '../composables/useSidebarPadding';
+
+const router = useRouter();
+const auth = useAuth();
+const { paddingClass } = useSidebarPadding();
+
+const username = ref('');
+const password = ref('');
+const error = ref('');
+
+const handleSubmit = async () => {
+    error.value = '';
+    try {
+        const res = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username.value,
+                password: password.value,
+            }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        auth.login({
+            user: data.user,
+            token: data.token,
+        });
+
+        router.push('/dashboard');
+    } catch (err) {
+        error.value = err.message;
+    }
+};
+</script>
+
 <template>
-    <div class="flex items-center justify-center min-h-screen bg-[#0e0e0e]">
+    <div :class="`flex items-center justify-center min-h-screen ${paddingClass}`">
         <form @submit.prevent="handleSubmit"
             class="bg-[#1f1f1f] p-6 rounded-lg shadow-lg w-80 space-y-4 border border-gray-800">
             <h2 class="text-2xl font-bold text-center text-cocktail-glow">Login</h2>
@@ -24,44 +65,3 @@
         </form>
     </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuth } from '../composables/useAuth';
-
-const router = useRouter();
-const auth = useAuth();
-
-const username = ref('');
-const password = ref('');
-const error = ref('');
-
-const handleSubmit = async () => {
-    error.value = '';
-
-    try {
-        const res = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: username.value,
-                password: password.value,
-            }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.message);
-
-        auth.login({
-            user: data.user,
-            token: data.token,
-        });
-
-        router.push('/dashboard');
-    } catch (err) {
-        error.value = err.message;
-    }
-};
-</script>
