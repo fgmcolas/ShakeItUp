@@ -55,7 +55,7 @@ const handleLogout = () => {
                         🍹 All Cocktails
                     </RouterLink>
                     <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
-                        🧂 Ingredients
+                        🧂 My Ingredients
                     </RouterLink>
                     <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')">
                         🍸 Creation
