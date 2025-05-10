@@ -190,12 +190,16 @@ const submitCocktail = async () => {
                     </div>
                 </div>
             </div>
-
             <button @click="submitCocktail"
                 class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
                 Create Cocktail
             </button>
+            <p v-if="success || error" :class="{
+                'text-green-500': success,
+                'text-red-500': error
+            }" class="text-sm mt-2 text-center">
+                {{ success ? 'Cocktail successfully created!' : error }}
+            </p>
         </div>
-
     </div>
 </template>
