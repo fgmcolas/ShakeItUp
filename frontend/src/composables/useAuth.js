@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue';
+import { ref, readonly, computed } from 'vue';
 
 function safelyParseUser() {
     const raw = localStorage.getItem('user');
@@ -18,6 +18,11 @@ function safelyParseUser() {
 
 const user = ref(safelyParseUser());
 const token = ref(localStorage.getItem('token') || null);
+
+const fridgeKey = computed(() => {
+    const id = user.value?._id || user.value?.id || 'guest';
+    return `myFridgeIngredients_${id}`;
+});
 
 const login = (userData) => {
     if (!userData?.user || !userData?.token) {
@@ -53,5 +58,6 @@ export function useAuth() {
         login,
         logout,
         updateFavorites,
+        fridgeKey,
     };
 }
