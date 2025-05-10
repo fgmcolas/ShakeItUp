@@ -1,7 +1,9 @@
 <template>
-    <button @click="toggleFavorite" :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
-        class="favorite-button">
-        <!-- Filled heart -->
+    <button
+        @click="handleClick"
+        :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
+        class="favorite-button"
+    >
         <svg v-if="isFavorite" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="none"
             class="w-6 h-6 neon-heart animate-fade-scale">
             <defs>
@@ -16,7 +18,6 @@
            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
 
-        <!-- Outline heart -->
         <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"
             class="w-6 h-6 hover:scale-110 transition-transform animate-fade-scale">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 
@@ -42,6 +43,12 @@ const isFavorite = ref(false);
 watchEffect(() => {
     isFavorite.value = user.value?.favorites?.includes(props.cocktailId) ?? false;
 });
+
+const handleClick = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    toggleFavorite();
+};
 
 const toggleFavorite = async () => {
     if (!user.value || (!user.value._id && !user.value.id)) {
