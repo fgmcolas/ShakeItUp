@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router';
 import { useAuth } from '../composables/useAuth';
 import { useSidebarPadding } from '../composables/useSidebarPadding';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const router = useRouter();
 const auth = useAuth();
 const { paddingClass } = useSidebarPadding();
@@ -16,7 +18,7 @@ const error = ref('');
 const handleSubmit = async () => {
     error.value = '';
     try {
-        const res = await fetch('http://localhost:5000/api/auth/register', {
+        const res = await fetch(`${API_URL}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
