@@ -2,6 +2,8 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useSidebarStore } from '../stores/sidebar'
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const sidebar = useSidebarStore()
 
 const isMobile = ref(window.innerWidth < 768)
@@ -42,7 +44,7 @@ const error = ref('')
 
 const fetchIngredients = async () => {
     try {
-        const res = await fetch('http://localhost:5000/api/cocktails')
+        const res = await fetch(`${API_URL}/api/cocktails`)
         const data = await res.json()
         const allIngredients = data.flatMap(c => c.ingredients || [])
         ingredientsList.value = [...new Set(allIngredients)].sort((a, b) =>
@@ -89,7 +91,7 @@ const submitCocktail = async () => {
     }
 
     try {
-        const res = await fetch('http://localhost:5000/api/cocktails', {
+        const res = await fetch(`${API_URL}/api/cocktails`, {
             method: 'POST',
             body: fd,
         })
@@ -114,7 +116,7 @@ const submitCocktail = async () => {
 <template>
     <div :class="`grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-8 text-white ${paddingClass}`">
 
-        <!-- Colonne gauche -->
+        <!-- Left -->
         <div class="flex flex-col gap-4 xl:gap-6 justify-between">
             <div class="flex flex-col gap-4 xl:gap-6">
                 <h2 class="text-3xl font-bold text-pink-400">Create Your Cocktail 🍸</h2>
@@ -148,7 +150,7 @@ const submitCocktail = async () => {
             </div>
         </div>
 
-        <!-- Colonne droite -->
+        <!-- Right -->
         <div class="flex flex-col gap-4 xl:gap-6 items-center justify-between">
             <div class="flex flex-col gap-4 xl:gap-6 w-full xl:w-auto items-center">
 
