@@ -5,6 +5,8 @@ import CocktailCard from '../components/CocktailCard.vue';
 
 const { paddingClass } = useSidebarPadding();
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const cocktails = ref([]);
 const loading = ref(true);
 const error = ref('');
@@ -22,7 +24,7 @@ const ingredientsList = ref([]);
 
 const fetchCocktails = async () => {
     try {
-        const res = await fetch('http://localhost:5000/api/cocktails');
+        const res = await fetch(`${API_URL}/api/cocktails`);
         const data = await res.json();
         cocktails.value = data;
 
@@ -77,7 +79,6 @@ const filteredCocktails = computed(() => {
         );
     });
 
-    // Tri
     switch (sortOption.value) {
         case 'name-asc':
             results.sort((a, b) => a.name.localeCompare(b.name));
