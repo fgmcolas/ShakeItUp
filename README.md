@@ -1,4 +1,4 @@
-![CocktailCard](https://i.imgur.com/CSL7TwU.png)
+![CocktailCard](https://i.imgur.com/VBP2HwM.jpeg)
 
 ShakeItUp is a modern, responsive web app for discovering, creating, and rating cocktails. Built with **Vue 3**, **Tailwind CSS**, and a **Node.js + Express + MongoDB** backend, it lets you explore official and custom recipes based on your ingredients.
 
