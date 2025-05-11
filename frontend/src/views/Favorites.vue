@@ -4,6 +4,8 @@ import { useAuth } from '../composables/useAuth';
 import { useSidebarPadding } from '../composables/useSidebarPadding';
 import CocktailCard from '../components/CocktailCard.vue';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const { paddingClass } = useSidebarPadding();
 const auth = useAuth();
 
@@ -19,7 +21,7 @@ onMounted(async () => {
     }
 
     try {
-        const res = await fetch(`http://localhost:5000/api/users/${auth.user.value.id}`, {
+        const res = await fetch(`${API_URL}/api/users/${auth.user.value.id}`, {
             headers: {
                 Authorization: `Bearer ${auth.token.value}`,
             },
