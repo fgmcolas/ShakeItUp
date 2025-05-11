@@ -4,6 +4,8 @@ import { useSidebarPadding } from '../composables/useSidebarPadding';
 import { useAuth } from '../composables/useAuth';
 import FavoriteButton from '../components/FavoriteButton.vue';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const { paddingClass } = useSidebarPadding();
 const auth = useAuth();
 
@@ -23,7 +25,7 @@ onMounted(async () => {
     }
 
     try {
-        const res = await fetch('http://localhost:5000/api/cocktails');
+        const res = await fetch(`${API_URL}/api/cocktails`);
         const data = await res.json();
         cocktails.value = data;
         const allIngredients = data.flatMap(c => c.ingredients);
