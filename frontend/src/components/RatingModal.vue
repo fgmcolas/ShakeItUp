@@ -1,3 +1,54 @@
+<script setup>
+import { ref } from 'vue';
+import { useAuth } from '../composables/useAuth';
+
+const props = defineProps({
+    cocktailId: String,
+});
+
+const emit = defineEmits(['close', 'submitted']);
+const auth = useAuth();
+
+const selectedScore = ref(0);
+const comment = ref('');
+const error = ref('');
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+const close = () => emit('close');
+
+const submitRating = async () => {
+    error.value = '';
+    if (!selectedScore.value) {
+        error.value = 'Please select a rating.';
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/api/ratings/${props.cocktailId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${auth.token.value}`,
+            },
+            body: JSON.stringify({
+                score: selectedScore.value,
+                comment: comment.value,
+            }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'Failed to submit rating');
+
+        emit('submitted');
+        close();
+    } catch (err) {
+        console.error('Error submitting rating:', err);
+        error.value = err.message || 'Server error';
+    }
+};
+</script>
+
 <template>
     <div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
         <div class="bg-[#1e1e1e] text-white p-6 rounded-lg shadow-xl w-full max-w-md">
@@ -29,52 +80,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-import { useAuth } from '../composables/useAuth';
-
-const props = defineProps({
-    cocktailId: String,
-});
-
-const emit = defineEmits(['close', 'submitted']);
-const auth = useAuth();
-
-const selectedScore = ref(0);
-const comment = ref('');
-const error = ref('');
-
-const close = () => emit('close');
-
-const submitRating = async () => {
-    error.value = '';
-    if (!selectedScore.value) {
-        error.value = 'Please select a rating.';
-        return;
-    }
-
-    try {
-        const res = await fetch(`http://localhost:5000/api/ratings/${props.cocktailId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${auth.token.value}`,
-            },
-            body: JSON.stringify({
-                score: selectedScore.value,
-                comment: comment.value,
-            }),
-        });
-
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || 'Failed to submit rating');
-
-        emit('submitted');
-        close();
-    } catch (err) {
-        console.error('Error submitting rating:', err);
-        error.value = err.message || 'Server error';
-    }
-};
-</script>
