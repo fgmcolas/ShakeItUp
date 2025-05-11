@@ -5,6 +5,8 @@ const props = defineProps({
     cocktailId: String,
 });
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const rating = ref(null);
 const loading = ref(true);
 const error = ref(null);
@@ -12,7 +14,7 @@ const error = ref(null);
 const fetchRating = async () => {
     loading.value = true;
     try {
-        const res = await fetch(`http://localhost:5000/api/ratings/${props.cocktailId}`);
+        const res = await fetch(`${API_URL}/api/ratings/${props.cocktailId}`);
         const data = await res.json();
         rating.value = data;
         error.value = null;
