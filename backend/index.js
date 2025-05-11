@@ -10,7 +10,7 @@ import path from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config({ path: join(__dirname, ".env") });
+dotenv.config();
 
 import authRoutes from "./routes/auth.routes.js";
 import cocktailRoutes from "./routes/cocktail.routes.js";
@@ -19,15 +19,15 @@ import ratingRoutes from "./routes/rating.routes.js";
 
 const app = express();
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: true,
     credentials: true,
 }));
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
-
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
@@ -38,8 +38,8 @@ app.use("/api/ratings", ratingRoutes);
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
-        app.listen(process.env.PORT, () => {
-            console.log(`Backend is running on port ${process.env.PORT}`);
+        app.listen(PORT, () => {
+            console.log(`Backend is running on port ${PORT}`);
         });
     })
     .catch((err) => console.error("MongoDB connection error:", err));
