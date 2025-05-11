@@ -2,7 +2,7 @@
   <div class="flex">
     <Sidebar />
 
-    <main class="flex-1 p-4">
+    <main class="flex-1 px-4">
       <RouterView />
     </main>
   </div>
