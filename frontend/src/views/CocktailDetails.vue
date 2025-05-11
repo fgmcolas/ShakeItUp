@@ -5,6 +5,8 @@ import { useSidebarPadding } from '../composables/useSidebarPadding.js';
 import FavoriteButton from '../components/FavoriteButton.vue';
 import RatingDisplay from '../components/RatingDisplay.vue';
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 const route = useRoute();
 const cocktail = ref(null);
 const error = ref('');
@@ -14,7 +16,7 @@ const { paddingClass } = useSidebarPadding();
 
 const fetchCocktail = async () => {
     try {
-        const res = await fetch(`http://localhost:5000/api/cocktails/${route.params.id}`);
+        const res = await fetch(`${API_URL}/api/cocktails/${route.params.id}`);
         if (!res.ok) throw new Error('Failed to fetch cocktail details');
         const data = await res.json();
         cocktail.value = data;
