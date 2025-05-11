@@ -1,55 +1,69 @@
-# ShakeItUp 🍸
+![CocktailCard](https://i.imgur.com/CSL7TwU.png)
 
-A modern, responsive web app for discovering and creating cocktails. Built with **Vue 3**, **Tailwind CSS**, and a **Node.js + Express + MongoDB** backend.
+ShakeItUp is a modern, responsive web app for discovering, creating, and rating cocktails. Built with **Vue 3**, **Tailwind CSS**, and a **Node.js + Express + MongoDB** backend, it lets you explore official and custom recipes based on your ingredients.
 
 ---
 
 ## ✨ Features
 
-### 🍇 Cocktails Explorer
+### 🎉 Welcome Dashboard
+- Friendly introduction and quick navigation
+- Links to all main sections: Cocktails, Ingredients, Creation, Favorites
+
+![CocktailCard](https://i.imgur.com/9s0gzDF.png)
+
+### 🍹 Cocktail Cards
+
+Browse colorful cocktail cards featuring ratings, badges (e.g. Alcoholic, Fruity, Official), and quick access to rate or favorite each recipe.
+
+### 🍇 Cocktail Explorer
 - Live search by name or ingredients
-- Filter by:
-  - Alcohol type (Gin, Rum, Vodka...)
-  - Flavor style (Fruity, Bitter, Sweet...)
+- Advanced filtering:
+  - Alcohol type (Gin, Vodka, Rum…)
+  - Flavor style (Fruity, Bitter, Sweet…)
   - Specific ingredients
   - Alcohol-free only
   - Official recipes only
-- Responsive grid from mobile to wide screens (1 to 5 columns)
-- Visual tags for alcoholic/non-alcoholic, style, and official status
-- Image fallback if cocktail image fails to load
+- Fully responsive grid layout (1 to 5 columns)
+- Visual tags: Alcoholic, Fruity, Official, etc.
+- Star rating and user comments system
 
-### 🔑 Authentication
-- Login and register
-- Session stored in localStorage
-- Protected routes with redirect logic
+### 🧪 My Ingredients
+- “Fridge” style interface to select available ingredients
+- Instantly shows which cocktails you can make
 
-### 🎪 My Creations
-- Authenticated users can add their own cocktails
-- Structured form with:
-  - Name
-  - Ingredients (line-by-line)
+### 🍸 Cocktail Creation
+- Structured form including:
+  - Cocktail name
+  - Ingredients list
   - Instructions
-  - Image URL
-  - Alcoholic flag
-  - (Upcoming) flavor style, official toggle
+  - Image upload
+  - Alcoholic toggle
+- Real-time preview of the cocktail card
 
-### 🍻 Ingredients View
-- Browse a unique list of ingredients used in cocktails
+### ❤️ Favorites
+- Mark cocktails as favorites
+- Quick access via dedicated view
+
+### 🔒 Authentication
+- User registration & login
+- Sessions persisted via `localStorage`
+- Protected routes for authenticated users
 
 ---
 
-## ⚡ Tech Stack
+## ⚙️ Tech Stack
 
 ### Frontend
-- Vue 3 (script setup)
-- Tailwind CSS (custom theme + breakpoints)
-- Vite
+- Vue 3 (Composition API)
+- Tailwind CSS (custom theme + responsive breakpoints)
 - Vue Router
+- Vite
 
 ### Backend
-- Node.js
-- Express
+- Node.js + Express
 - MongoDB (Mongoose)
+- JWT Authentication
 
 ---
 
@@ -57,7 +71,7 @@ A modern, responsive web app for discovering and creating cocktails. Built with 
 
 ### Prerequisites
 - Node.js v18+
-- MongoDB running locally or via Atlas
+- MongoDB Atlas account or local instance
 
 ### 1. Clone & Install
 ```bash
@@ -65,86 +79,86 @@ git clone https://github.com/fgmcolas/ShakeItUp.git
 cd shakeitup
 
 # Backend
-yarn install  # or npm install
+cd backend
+npm install
 
 # Frontend
 cd frontend
-yarn install  # or npm install
+npm install
 ```
 
-### 2. Run Development
+### 2. Run in Dev
 ```bash
-# In root directory (for backend)
-yarn dev
+# Backend
+cd backend
+npm run dev
 
-# In /frontend directory
+# Frontend
 cd frontend
-yarn dev
+npm run dev
 ```
 
 ### 3. Environment Variables
-Create a `.env` file for backend:
+Create a `.env` file in the backend folder:
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/shakeitup
-JWT_SECRET=your-secret-key
+MONGO_URI=mongodb+srv://<username>:<password>@shakeitupcluster.dq5mhqm.mongodb.net
+JWT_SECRET=your_jwt_secret_here
 ```
-
----
-
-## 🌐 Deployment
-- Frontend is built with `vite build`
-- Backend is deployable to services like Render, Railway or DigitalOcean
-
----
-
-## 🌐 Demo
-_(Coming soon)_
+🔒 **Note**: Keep sensitive data out of version control.
 
 ---
 
 ## 📁 Project Structure
 ```
 shakeitup/
-├── backend/
-│   ├── controllers/
-│   ├── models/
-│   ├── routes/
-│   ├── middleware/
-│   └── data/cocktails.json
-├── frontend/
+├── backend/               # Node.js + Express API
+│   ├── controllers/       # Business logic
+│   ├── models/            # Mongoose schemas
+│   ├── routes/            # Express routes
+│   ├── middleware/        # Auth, validation, etc.
+│   ├── scripts/           # Data seeding
+│   ├── uploads/           # Uploaded cocktail images
+│   └── index.js           # Entry point
+│
+├── frontend/              # Vue 3 SPA
+│   ├── public/            # Static assets (logo, screenshots)
 │   ├── src/
-│   │   ├── views/
-│   │   ├── components/
-│   │   ├── composables/
-│   │   └── assets/
-│   └── public/default-cocktail.jpg
+│   │   ├── components/     # Reusable UI
+│   │   ├── views/          # Page views (Cocktails, Favorites…)
+│   │   ├── router/         # Vue Router config
+│   │   ├── stores/         # Pinia stores
+│   │   └── main.js         # App entry point
+│
+└── README.md              # Project documentation
 ```
 
 ---
 
 ## 📊 Roadmap
-- [x] Cocktail search + filters
-- [x] Login/Register with session persistence
-- [x] Custom sidebar + responsive layout
-- [x] Add cocktail form
-- [x] Backend API + MongoDB support
-- [ ] Favoriting cocktails
-- [ ] Editing/removing your creations
+
+- [x] Authentication with JWT
+- [x] Cocktail search and filters
+- [x] Cocktail creation form
+- [x] Ingredient-based cocktail suggestions
+- [x] Live preview when creating
+- [x] Favorites system
+- [x] Ratings & comments
+- [x] Responsive sidebar
+- [ ] Deployment
 
 ---
 
 ## 🙌 Credits
 - UI Icons: Lucide
-- Cocktail illustrations: Custom fallback
+- Illustrations: Custom fallback
 - Inspiration: Real bar menus & Vue Mastery
 
 ---
 
-## ✊ License
+## 📝 License
 [MIT](LICENSE)
 
 ---
 
-Built with love and lemon by the ShakeItUp dev team ❤️
-
+Built with love (and a splash of lime 🍋) by the ShakeItUp team.
