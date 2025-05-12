@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import path from "path";
@@ -18,8 +19,12 @@ import userRoutes from "./routes/user.routes.js";
 import ratingRoutes from "./routes/rating.routes.js";
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
+
+const uploadsPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath);
+}
 
 app.use(cors({
     origin: true,
