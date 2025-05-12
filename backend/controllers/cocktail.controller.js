@@ -7,7 +7,8 @@ export const createCocktail = async (req, res) => {
 
         const serverURL = process.env.SERVER_URL || `http://localhost:${process.env.PORT || 5000}`;
         const image = req.file ? `${serverURL}/${req.file.path.replace(/\\/g, '/')}` : null;
-        console.log("SERVER_URL used in upload:", serverURL);
+        console.log("DEBUG image path:", image);
+        console.log("DEBUG env SERVER_URL:", process.env.SERVER_URL);
 
         const newCocktail = new Cocktail({
             name,
