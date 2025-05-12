@@ -6,7 +6,7 @@ ShakeItUp is a modern, responsive web app for discovering, creating, and rating 
 
 ## 🌐 Live Demo
 
-Try the app: [ShakeItUp](https://shake-it-ij0hcoor1-fgmcolas-projects-d925234f.vercel.app) (opens in a new tab)
+Try the app: [ShakeItUp](https://shake-it-up-neon.vercel.app) (opens in a new tab)
 
 
 ## ✨ Features
