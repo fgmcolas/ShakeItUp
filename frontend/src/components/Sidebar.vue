@@ -26,7 +26,7 @@ const handleLogout = () => {
 
 <template>
     <div>
-        <!-- Burger -->
+        <!-- Burger Button (mobile only) -->
         <button v-if="!sidebar.isOpen"
             class="md:hidden fixed top-4 left-4 z-50 p-2 bg-cocktail-glow text-white border rounded shadow"
             @click="sidebar.open">
@@ -34,11 +34,11 @@ const handleLogout = () => {
         </button>
 
         <!-- Sidebar -->
-        <aside
-            :class="`fixed top-0 left-0 h-full w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col justify-between ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:flex`">
-
-            <!-- Top -->
-            <div>
+        <aside :class="`fixed top-0 left-0 h-screen w-64 bg-[#0e0e0e] border-r border-gray-800 shadow-md z-40 transform transition-transform duration-200 flex flex-col ${sidebar.isOpen ? 'translate-x-0' : '-translate-x-full'
+            } md:translate-x-0 md:flex`">
+            <!-- Scrollable Top Section -->
+            <div class="flex-1 overflow-y-auto">
+                <!-- Logo + Close Button -->
                 <div class="flex items-center justify-between p-6 border-b border-gray-800">
                     <RouterLink :to="isLoggedIn ? '/' : '/login'" @click="sidebar.close" class="block w-full">
                         <img src="/ShakeItUp_logo.png" alt="ShakeItUp Logo"
@@ -49,24 +49,25 @@ const handleLogout = () => {
                     </button>
                 </div>
 
-                <!-- Nav -->
+                <!-- Navigation Links -->
                 <nav class="p-4 space-y-2">
-                    <RouterLink to="/cocktails" :class="linkClass('/cocktails')">
+                    <RouterLink to="/cocktails" :class="linkClass('/cocktails')" @click="sidebar.close">
                         🍹 All Cocktails
                     </RouterLink>
-                    <RouterLink to="/ingredients" :class="linkClass('/ingredients')">
+                    <RouterLink to="/ingredients" :class="linkClass('/ingredients')" @click="sidebar.close">
                         🧂 My Ingredients
                     </RouterLink>
-                    <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')">
+                    <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')" @click="sidebar.close">
                         🍸 Creation
                     </RouterLink>
-                    <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')">
+                    <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')"
+                        @click="sidebar.close">
                         ❤️ Favorites
                     </RouterLink>
                 </nav>
             </div>
 
-            <!-- Bottom -->
+            <!-- Sticky Footer -->
             <div class="w-full p-4 border-t border-gray-800 text-sm text-center text-white">
                 <template v-if="isLoggedIn">
                     <p class="text-gray-300 mb-3">
