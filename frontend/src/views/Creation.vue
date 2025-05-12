@@ -167,7 +167,6 @@ const submitCocktail = async () => {
                         Selected: {{ imageFile.name }}
                     </p>
                 </div>
-
                 <div class="flex items-center gap-3">
                     <input type="checkbox" v-model="form.alcoholic" />
                     <span class="text-sm">Contains Alcohol</span>
