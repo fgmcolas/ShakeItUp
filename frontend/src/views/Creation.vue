@@ -157,7 +157,16 @@ const submitCocktail = async () => {
                 <textarea v-model="form.instructions" placeholder="Instructions"
                     class="w-full xl:w-[28rem] min-h-[180px] px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 resize-none"></textarea>
 
-                <input type="file" @change="handleImageUpload" class="block text-sm" />
+                <div class="flex flex-col items-center w-full xl:w-[28rem] gap-1">
+                    <input id="fileUpload" type="file" @change="handleImageUpload" class="hidden" />
+                    <label for="fileUpload"
+                        class="cursor-pointer inline-block bg-pink-500 hover:bg-pink-600 text-white font-semibold px-4 py-2 rounded-md text-sm">
+                        Upload Cocktail Image
+                    </label>
+                    <p v-if="imageFile" class="text-xs text-white/60 mt-1">
+                        Selected: {{ imageFile.name }}
+                    </p>
+                </div>
 
                 <div class="flex items-center gap-3">
                     <input type="checkbox" v-model="form.alcoholic" />
