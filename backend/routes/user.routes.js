@@ -4,6 +4,7 @@ import {
     getUserById,
     updateFavorites,
     updateIngredients,
+    toggleFavorite,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middleware/auth.middleware.js";
 
@@ -11,7 +12,6 @@ const router = express.Router();
 
 /**
  * Validation helper
- * - Collects express-validator errors and returns 400 if any
  */
 const validate = (rules) => [
     ...rules,
@@ -30,8 +30,6 @@ const validate = (rules) => [
 
 /**
  * GET /api/users/:id
- * -----------------------------------
- * Protected route to fetch user profile (excluding sensitive info).
  */
 router.get(
     "/:id",
@@ -42,11 +40,11 @@ router.get(
 
 /**
  * PATCH /api/users/:id/favorites
- * -----------------------------------
- * Updates a user's favorites list.
+ * Replace full favorites list
+ * Body: { favorites: string[] }
  */
 router.patch(
-    "/:id/favorites",
+    "/:id/favorites/full",
     verifyToken,
     validate([
         param("id").isMongoId().withMessage("Invalid user id"),
@@ -61,9 +59,27 @@ router.patch(
 );
 
 /**
+ * PATCH /api/users/:id/favorites
+ * Toggle one favorite (add/remove)
+ * Body: { cocktailId: string, action: 'add' | 'remove' }
+ */
+router.patch(
+    "/:id/favorites",
+    verifyToken,
+    validate([
+        param("id").isMongoId().withMessage("Invalid user id"),
+        body("cocktailId")
+            .isMongoId()
+            .withMessage("cocktailId must be a valid Mongo id"),
+        body("action")
+            .isIn(["add", "remove"])
+            .withMessage("action must be 'add' or 'remove'"),
+    ]),
+    toggleFavorite
+);
+
+/**
  * PATCH /api/users/:id/ingredients
- * -----------------------------------
- * Updates a user's ingredients list.
  */
 router.patch(
     "/:id/ingredients",
