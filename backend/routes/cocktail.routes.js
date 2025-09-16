@@ -45,33 +45,35 @@ const upload = multer({
 // ---------- Normalize + strong validation ----------
 const ensureImageMagicBytes = async (req, res, next) => {
     try {
-        // If client used a different field name, normalize to req.file
+        // Normalize: if Multer stored files in req.files, pick the first one
         if (!req.file && Array.isArray(req.files) && req.files.length > 0) {
             req.file = req.files[0];
         }
 
-        // No file at all → creating cocktail without image is allowed
+        // If no file was uploaded, allow cocktail creation without image
         if (!req.file) return next();
 
+        // Detect real file type by magic bytes (buffer content)
         const detected = await fileTypeFromBuffer(req.file.buffer);
         if (!detected || !allowedMimes.includes(detected.mime)) {
-            // A file was sent but it's not a permitted image
             return res.status(400).json({ error: "Only PNG/JPEG/WEBP allowed" });
         }
 
-        const uploadsDir = path.resolve(process.cwd(), "backend", "uploads");
+        // Ensure upload folder exists
+        const uploadsDir = path.resolve("backend", "uploads");
         await fs.mkdir(uploadsDir, { recursive: true });
 
+        // Create safe filename and write to disk
         const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${detected.ext}`;
         const fullPath = path.join(uploadsDir, filename);
         await fs.writeFile(fullPath, req.file.buffer);
 
-        // Populate Multer-like fields expected by the controller
+        // Populate Multer-like fields so controller can use them
         req.file.path = fullPath;
         req.file.filename = filename;
         req.file.mimetype = detected.mime;
         req.file.size = req.file.buffer.length;
-        delete req.file.buffer;
+        delete req.file.buffer; // free memory
 
         next();
     } catch (err) {
