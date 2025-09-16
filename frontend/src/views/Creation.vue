@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useSidebarStore } from '../stores/sidebar'
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL
 
 const sidebar = useSidebarStore()
 
@@ -46,11 +46,9 @@ const fetchIngredients = async () => {
     try {
         const res = await fetch(`${API_URL}/api/cocktails`)
         const data = await res.json()
-        const allIngredients = data.flatMap(c => c.ingredients || [])
-        ingredientsList.value = [...new Set(allIngredients)].sort((a, b) =>
-            a.localeCompare(b)
-        )
-    } catch (err) {
+        const allIngredients = data.flatMap((c) => c.ingredients || [])
+        ingredientsList.value = [...new Set(allIngredients)].sort((a, b) => a.localeCompare(b))
+    } catch {
         console.error('Failed to load ingredients.')
     }
 }
@@ -68,16 +66,36 @@ const addIngredient = () => {
     newIngredient.value = ''
 }
 
-const handleImageUpload = e => {
+const handleImageUpload = (e) => {
     const file = e.target?.files?.[0]
-    if (file) {
-        imageFile.value = file
+    if (!file) return
+
+    const allowed = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
+    if (!allowed.includes(file.type)) {
+        error.value = 'Only PNG/JPG/JPEG/WEBP allowed.'
+        imageFile.value = null
+        return
     }
+    if (file.size > 2 * 1024 * 1024) {
+        error.value = 'Image too large (max 2MB).'
+        imageFile.value = null
+        return
+    }
+
+    imageFile.value = file
 }
 
 const submitCocktail = async () => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+        error.value = 'You must be logged in to create a cocktail.'
+        success.value = false
+        return
+    }
+
     if (!form.value.name.trim()) {
         error.value = 'Name is required.'
+        success.value = false
         return
     }
 
@@ -86,19 +104,20 @@ const submitCocktail = async () => {
     fd.append('instructions', form.value.instructions)
     fd.append('alcoholic', form.value.alcoholic)
     fd.append('ingredients', JSON.stringify(selectedIngredients.value))
-    if (imageFile.value) {
-        fd.append('image', imageFile.value)
-    }
+    if (imageFile.value) fd.append('image', imageFile.value)
 
     try {
         const res = await fetch(`${API_URL}/api/cocktails`, {
             method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
             body: fd,
         })
 
+        const data = await res.json()
         if (!res.ok) {
-            const errorData = await res.json()
-            throw new Error(errorData.message || 'Failed to create cocktail.')
+            throw new Error(data?.error || data?.message || 'Failed to create cocktail.')
         }
 
         success.value = true
@@ -107,7 +126,7 @@ const submitCocktail = async () => {
         selectedIngredients.value = []
         imageFile.value = null
     } catch (err) {
-        error.value = err.message
+        error.value = err.message || 'Failed to create cocktail.'
         success.value = false
     }
 }
@@ -158,7 +177,8 @@ const submitCocktail = async () => {
                     class="w-full xl:w-[28rem] min-h-[180px] px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 resize-none"></textarea>
 
                 <div class="flex flex-col items-center w-full xl:w-[28rem] gap-1">
-                    <input id="fileUpload" type="file" @change="handleImageUpload" class="hidden" />
+                    <input id="fileUpload" type="file" accept="image/png,image/jpeg,image/webp"
+                        @change="handleImageUpload" class="hidden" />
                     <label for="fileUpload"
                         class="cursor-pointer inline-block bg-pink-500 hover:bg-pink-600 text-white font-semibold px-4 py-2 rounded-md text-sm">
                         Upload Cocktail Image
@@ -205,10 +225,9 @@ const submitCocktail = async () => {
                 class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
                 Create Cocktail
             </button>
-            <p v-if="success || error" :class="{
-                'text-green-500': success,
-                'text-red-500': error
-            }" class="text-sm mt-2 text-center">
+
+            <p v-if="success || error" :class="{ 'text-green-500': success, 'text-red-500': error }"
+                class="text-sm mt-2 text-center">
                 {{ success ? 'Cocktail successfully created!' : error }}
             </p>
         </div>
