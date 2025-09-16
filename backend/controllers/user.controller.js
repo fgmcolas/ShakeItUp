@@ -2,22 +2,22 @@ import mongoose from "mongoose";
 import User from "../models/user.js";
 
 /**
- * Helper: ensure the authenticated user matches the target :id
+ * Ensure the authenticated user matches the target :id
  */
 function assertSelfOrForbidden(req, res) {
     const requesterId = req.user?.sub || req.user?.id;
     const targetId = req.params.id;
     if (!requesterId || String(requesterId) !== String(targetId)) {
-        res
-            .status(403)
-            .json({ error: "Forbidden: you can access only your own profile." });
+        res.status(403).json({
+            error: "Forbidden: you can access only your own profile.",
+        });
         return false;
     }
     return true;
 }
 
 /**
- * Helper: validate an array of Mongo ObjectIds
+ * Validate an array of Mongo ObjectIds
  */
 function validateObjectIdArray(input) {
     if (!Array.isArray(input)) {
@@ -27,7 +27,10 @@ function validateObjectIdArray(input) {
     const values = [];
     for (const v of input) {
         if (typeof v !== "string" || !mongoose.Types.ObjectId.isValid(v)) {
-            return { ok: false, error: "Array must contain valid MongoDB ObjectIds." };
+            return {
+                ok: false,
+                error: "Array must contain valid MongoDB ObjectIds.",
+            };
         }
         if (!unique.has(v)) {
             unique.add(v);
@@ -38,7 +41,7 @@ function validateObjectIdArray(input) {
 }
 
 /**
- * Helper: sanitize a string array
+ * Sanitize a string array
  */
 function sanitizeStringArray(arr, maxLen = 64) {
     if (!Array.isArray(arr)) return [];
@@ -86,8 +89,8 @@ export const getUserById = async (req, res) => {
 };
 
 /**
- * PATCH /api/users/:id/favorites (replace all favorites)
- * Body: { favorites: string[] }
+ * PATCH /api/users/:id/favorites/full
+ * Replace all favorites with provided array
  */
 export const updateFavorites = async (req, res) => {
     try {
@@ -119,8 +122,9 @@ export const updateFavorites = async (req, res) => {
 };
 
 /**
- * PATCH /api/users/:id/favorites (toggle add/remove one cocktail)
- * Body: { cocktailId: string, action: 'add' | 'remove' }
+ * PATCH /api/users/:id/favorites
+ * Toggle one favorite (add/remove).
+ * If "action" is missing, infer it based on whether the cocktail is already in favorites.
  */
 export const toggleFavorite = async (req, res) => {
     try {
@@ -132,29 +136,34 @@ export const toggleFavorite = async (req, res) => {
         if (!cocktailId || !mongoose.Types.ObjectId.isValid(cocktailId)) {
             return res.status(400).json({ error: "Invalid cocktailId" });
         }
-        if (!["add", "remove"].includes(action)) {
-            return res.status(400).json({ error: "action must be 'add' or 'remove'" });
-        }
 
         const oid = new mongoose.Types.ObjectId(cocktailId);
 
+        // Fetch user to determine toggle if no action provided
+        const user = await User.findById(id).select("favorites");
+        if (!user) return res.status(404).json({ error: "User not found." });
+
+        let finalAction = action;
+        if (!finalAction) {
+            const alreadyFavorite = user.favorites.some(
+                (f) => f.toString() === cocktailId
+            );
+            finalAction = alreadyFavorite ? "remove" : "add";
+        }
+
         const update =
-            action === "add"
+            finalAction === "add"
                 ? { $addToSet: { favorites: oid } }
                 : { $pull: { favorites: oid } };
 
-        const user = await User.findByIdAndUpdate(id, update, {
+        const updated = await User.findByIdAndUpdate(id, update, {
             new: true,
             runValidators: true,
         }).select("-password -usernameLower -__v");
 
-        if (!user) {
-            return res.status(404).json({ error: "User not found." });
-        }
-
-        return res
-            .status(200)
-            .json({ favorites: user.favorites.map((f) => String(f)) });
+        return res.status(200).json({
+            favorites: updated.favorites.map((f) => String(f)),
+        });
     } catch (err) {
         console.error("[toggleFavorite]", err);
         return res.status(500).json({ error: "Server error" });
@@ -163,7 +172,6 @@ export const toggleFavorite = async (req, res) => {
 
 /**
  * PATCH /api/users/:id/ingredients
- * Body: { ingredients: string[] }
  */
 export const updateIngredients = async (req, res) => {
     try {
