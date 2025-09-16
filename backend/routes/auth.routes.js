@@ -22,12 +22,12 @@ router.post(
     validate([
         body("email").isEmail().withMessage("Invalid email").normalizeEmail(),
         body("username")
-            .isString().withMessage("username must be a string")
+            .isString().withMessage("Username must be a string")
             .trim()
-            .isLength({ min: 3, max: 30 }).withMessage("username must be 3–30 chars"),
+            .isLength({ min: 3, max: 30 }).withMessage("Username must be 3–30 chars"),
         body("password")
-            .isString().withMessage("password must be a string")
-            .isLength({ min: 8, max: 128 }).withMessage("password must be 8–128 chars"),
+            .isString().withMessage("Password must be a string")
+            .isLength({ min: 8, max: 128 }).withMessage("Password must be 8–128 chars"),
     ]),
     register
 );
@@ -37,9 +37,9 @@ router.post(
     "/login",
     validate([
         body("username")
-            .isString().withMessage("username must be a string")
+            .isString().withMessage("Username must be a string")
             .trim()
-            .isLength({ min: 3, max: 30 }).withMessage("username must be 3–30 chars"),
+            .isLength({ min: 3, max: 30 }).withMessage("Username must be 3–30 chars"),
         body("password").isString().notEmpty().withMessage("Password required"),
     ]),
     login
