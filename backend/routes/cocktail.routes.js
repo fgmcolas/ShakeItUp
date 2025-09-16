@@ -1,4 +1,3 @@
-// backend/routes/cocktail.routes.js
 import express from "express";
 import multer from "multer";
 import fs from "fs/promises";
