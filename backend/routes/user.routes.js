@@ -1,30 +1,17 @@
-// Import express to create a router
 import express from "express";
-
-// Import validators:
-// - param: to validate URL params (e.g., user id)
-// - body: to validate request body fields
-// - validationResult: to check for validation errors
 import { param, body, validationResult } from "express-validator";
-
-// Import controller functions (business logic)
 import {
     getUserById,
     updateFavorites,
     updateIngredients,
 } from "../controllers/user.controller.js";
-
-// Import middleware to protect private routes
 import { verifyToken } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 /**
- * Validation helper middleware
- * -----------------------------------
- * Collects errors from express-validator.
- * - If any errors → return HTTP 400 with details.
- * - Otherwise → continue to controller.
+ * Validation helper
+ * - Collects express-validator errors and returns 400 if any
  */
 const validate = (rules) => [
     ...rules,
@@ -44,13 +31,7 @@ const validate = (rules) => [
 /**
  * GET /api/users/:id
  * -----------------------------------
- * Protected route: fetch user profile by id.
- * Validation:
- * - id must be a valid MongoDB ObjectId
- *
- * Controller responsibility:
- * - Return 200 with user data (excluding sensitive info).
- * - Return 404 if user not found.
+ * Protected route to fetch user profile (excluding sensitive info).
  */
 router.get(
     "/:id",
@@ -62,14 +43,7 @@ router.get(
 /**
  * PATCH /api/users/:id/favorites
  * -----------------------------------
- * Protected route: update a user's list of favorite cocktails.
- * Validation:
- * - id: must be valid MongoDB ObjectId
- * - favorites: must be an array of MongoDB ObjectIds (cocktail ids)
- *
- * Controller responsibility:
- * - Update the user document with new favorites.
- * - Return 200 with updated user data.
+ * Updates a user's favorites list.
  */
 router.patch(
     "/:id/favorites",
@@ -77,7 +51,7 @@ router.patch(
     validate([
         param("id").isMongoId().withMessage("Invalid user id"),
         body("favorites")
-            .isArray()
+            .isArray({ min: 0 })
             .withMessage("favorites must be an array"),
         body("favorites.*")
             .isMongoId()
@@ -89,15 +63,7 @@ router.patch(
 /**
  * PATCH /api/users/:id/ingredients
  * -----------------------------------
- * Protected route: update the user's list of available ingredients.
- * Validation:
- * - id: must be valid MongoDB ObjectId
- * - ingredients: must be an array of strings
- * - each string is sanitized (trim + escape)
- *
- * Controller responsibility:
- * - Update the user document with new ingredients.
- * - Return 200 with updated user data.
+ * Updates a user's ingredients list.
  */
 router.patch(
     "/:id/ingredients",
@@ -105,12 +71,13 @@ router.patch(
     validate([
         param("id").isMongoId().withMessage("Invalid user id"),
         body("ingredients")
-            .isArray()
+            .isArray({ min: 0 })
             .withMessage("ingredients must be an array"),
         body("ingredients.*")
             .isString()
             .trim()
-            .escape(),
+            .isLength({ max: 64 })
+            .withMessage("Each ingredient must be a string ≤64 chars"),
     ]),
     updateIngredients
 );
