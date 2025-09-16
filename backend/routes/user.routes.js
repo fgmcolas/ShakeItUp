@@ -39,8 +39,8 @@ router.get(
 );
 
 /**
- * PATCH /api/users/:id/favorites
- * Replace full favorites list
+ * PATCH /api/users/:id/favorites/full
+ * Replace the full favorites list
  * Body: { favorites: string[] }
  */
 router.patch(
@@ -60,8 +60,8 @@ router.patch(
 
 /**
  * PATCH /api/users/:id/favorites
- * Toggle one favorite (add/remove)
- * Body: { cocktailId: string, action: 'add' | 'remove' }
+ * Toggle one favorite (add/remove).
+ * Body: { cocktailId: string, action?: 'add' | 'remove' }
  */
 router.patch(
     "/:id/favorites",
@@ -72,6 +72,7 @@ router.patch(
             .isMongoId()
             .withMessage("cocktailId must be a valid Mongo id"),
         body("action")
+            .optional()
             .isIn(["add", "remove"])
             .withMessage("action must be 'add' or 'remove'"),
     ]),
