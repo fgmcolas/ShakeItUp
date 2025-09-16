@@ -1,6 +1,6 @@
 <script setup>
-import { ref, watchEffect } from 'vue';
-import { useAuth } from '../composables/useAuth';
+import { ref, watchEffect } from "vue";
+import { useAuth } from "../composables/useAuth";
 
 const props = defineProps({
     cocktailId: { type: String, required: true },
@@ -11,87 +11,48 @@ const user = auth.user;
 const isFavorite = ref(false);
 
 watchEffect(() => {
-    isFavorite.value = user.value?.favorites?.includes(props.cocktailId) ?? false;
+    const favs = user.value?.favorites ?? [];
+    const ids = favs.map((f) => (typeof f === "string" ? f : f?._id)).filter(Boolean);
+    isFavorite.value = ids.includes(props.cocktailId);
 });
 
-const handleClick = (event) => {
+async function toggleFavorite(event) {
     event.stopPropagation();
     event.preventDefault();
-    toggleFavorite();
-};
 
-const toggleFavorite = async () => {
-    if (!user.value || (!user.value._id && !user.value.id)) {
-        console.warn('User ID is missing. Cannot favorite.');
-        return;
-    }
+    if (!user.value) return;
 
     const userId = user.value._id || user.value.id;
     const API_URL = import.meta.env.VITE_API_URL;
 
     try {
         const res = await fetch(`${API_URL}/api/users/${userId}/favorites`, {
-            method: 'PATCH',
+            method: "PATCH",
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${auth.token.value}`,
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.token.value}`,
             },
             body: JSON.stringify({ cocktailId: props.cocktailId }),
-            credentials: 'include',
         });
 
-        const data = await res.json();
-        if (res.ok) {
-            auth.updateFavorites(data.favorites);
-        } else {
-            console.error('Failed to update favorites:', data.message);
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            console.error("Failed to update favorites:", err.error || res.status);
+            return;
         }
+
+        const data = await res.json();
+        auth.updateFavorites(data.favorites); // met à jour le store utilisateur
     } catch (err) {
-        console.error('Error toggling favorite:', err);
+        console.error("Error toggling favorite:", err);
     }
-};
+}
 </script>
 
-<style scoped>
-.favorite-button {
-    all: unset;
-    cursor: pointer;
-    padding: 0;
-    margin: 0;
-    display: inline-flex;
-    background-color: transparent !important;
-    box-shadow: none !important;
-}
-
-.neon-heart {
-    filter: drop-shadow(0 0 3px #ff66ff) drop-shadow(0 0 6px #ff00cc);
-    transition: transform 0.2s ease-in-out;
-}
-
-@keyframes fadeScale {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.animate-fade-scale {
-    animation: fadeScale 0.2s ease-in-out;
-}
-</style>
-
 <template>
-    <button
-        @click="handleClick"
-        :aria-label="isFavorite ? 'Remove from favorites' : 'Add to favorites'"
-        class="favorite-button"
-    >
-        <svg v-if="isFavorite" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="none"
+    <button @click="toggleFavorite" class="favorite-button">
+        <!-- Filled pink heart when favorite -->
+        <svg v-if="isFavorite" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
             class="w-6 h-6 neon-heart animate-fade-scale">
             <defs>
                 <linearGradient id="neonGradient" x1="0" y1="0" x2="24" y2="24">
@@ -105,6 +66,7 @@ const toggleFavorite = async () => {
            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
 
+        <!-- Outline heart when not favorite -->
         <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2"
             class="w-6 h-6 hover:scale-110 transition-transform animate-fade-scale">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 0 1 6.364 0L12 
@@ -114,3 +76,16 @@ const toggleFavorite = async () => {
         </svg>
     </button>
 </template>
+
+<style scoped>
+.favorite-button {
+    all: unset;
+    cursor: pointer;
+    display: inline-flex;
+}
+
+.neon-heart {
+    filter: drop-shadow(0 0 3px #ff66ff) drop-shadow(0 0 6px #ff00cc);
+    transition: transform 0.2s ease-in-out;
+}
+</style>
