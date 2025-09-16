@@ -1,26 +1,52 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import Cocktail from '../models/cocktail.js';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import Cocktail from "../models/cocktail.js";
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(async () => {
+(async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
         console.log("Connected to MongoDB");
 
-        const rawData = fs.readFileSync(path.join(__dirname, '../data/cocktails.json'));
-        const cocktails = JSON.parse(rawData);
+        const dataPath = path.join(__dirname, "../data/cocktails.json");
+        const raw = fs.readFileSync(dataPath, "utf8");
+        const cocktails = JSON.parse(raw);
 
-        await Cocktail.deleteMany();
-        await Cocktail.insertMany(cocktails);
+        if (!Array.isArray(cocktails)) {
+            throw new Error("cocktails.json must export an array");
+        }
 
-        console.log("Cocktails imported!");
-        process.exit();
-    })
-    .catch(err => console.error("MongoDB Error:", err));
+        const doReset = String(process.env.RESET || "").toLowerCase() === "true";
+
+        if (doReset) {
+            console.warn("RESET=true → Deleting all cocktails before seeding...");
+            await Cocktail.deleteMany({});
+        }
+
+        let inserted = 0;
+        for (const c of cocktails) {
+            // Upsert by unique name
+            const res = await Cocktail.updateOne(
+                { name: c.name },
+                { $setOnInsert: c },
+                { upsert: true }
+            );
+            // Count inserts (not updates)
+            if (res.upsertedCount === 1 || res.upsertedId) inserted++;
+        }
+
+        console.log(`Seeding done. Inserted: ${inserted}, Upserts attempted: ${cocktails.length}`);
+        await mongoose.disconnect();
+        process.exit(0);
+    } catch (err) {
+        console.error("Seed error:", err);
+        process.exit(1);
+    }
+})();
