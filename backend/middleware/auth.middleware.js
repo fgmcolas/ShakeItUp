@@ -1,4 +1,4 @@
-// Import JWT library to verify JSON Web Tokens
+// JWT verification middleware for protected routes
 import jwt from "jsonwebtoken";
 
 /**
@@ -7,40 +7,48 @@ import jwt from "jsonwebtoken";
  * Protects private routes by requiring a valid JWT.
  *
  * How it works:
- * 1. Looks for the "Authorization" header in the request
- *    - Expected format: "Bearer <token>"
- * 2. If no header or wrong format → return 401 (unauthorized)
- * 3. If header is valid → extract token and verify with JWT_SECRET
- * 4. If token is valid → attach decoded payload to req.user
- * 5. If token is invalid/expired → return 401 (unauthorized)
+ * 1) Reads the "Authorization" header (expected: "Bearer <token>")
+ * 2) Verifies the token with JWT_SECRET (+ optional iss/aud checks)
+ * 3) Attaches the decoded payload to req.user
+ * 4) Fails with 401 on any problem (missing, malformed, expired, invalid)
  */
 export const verifyToken = (req, res, next) => {
-    // Get the Authorization header
-    const authHeader = req.headers.authorization;
-
-    // If header missing or doesn't start with "Bearer "
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        return res
-            .status(401)
-            .json({ message: "Access denied. No token provided." });
+    // Normalize header key handling
+    const authHeader = req.headers.authorization || req.headers.Authorization;
+    if (typeof authHeader !== "string") {
+        return res.status(401).json({ error: "Access denied: missing token." });
     }
 
-    // Extract token part after "Bearer "
-    const token = authHeader.split(" ")[1];
+    // Accept only the Bearer scheme (case-insensitive)
+    const [scheme, token] = authHeader.split(" ");
+    if (!scheme || !token || scheme.toLowerCase() !== "bearer") {
+        return res.status(401).json({ error: "Access denied: bad auth scheme." });
+    }
+
+    // Fail fast if secret is not configured
+    if (!process.env.JWT_SECRET) {
+        return res
+            .status(500)
+            .json({ error: "Server misconfigured: missing JWT secret." });
+    }
 
     try {
-        // Verify the token using the secret key from .env
-        // - If valid → decoded payload is returned
-        // - Payload usually contains: { id, role, iat, exp }
+        // Optional strict verification (uncomment and set envs if you want)
+        // const options = {
+        //   issuer: process.env.JWT_ISSUER,
+        //   audience: process.env.JWT_AUDIENCE,
+        // };
+        // const decoded = jwt.verify(token, process.env.JWT_SECRET, options);
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Attach decoded payload to the request for controllers to use
+        // Attach decoded payload for controllers (keep it minimal)
+        // Convention: use "sub" for user id
         req.user = decoded;
 
-        // Continue to the next middleware/controller
-        next();
+        return next();
     } catch (err) {
-        // If verification fails (expired, malformed, wrong secret)
-        return res.status(401).json({ message: "Invalid token." });
+        // Avoid leaking details (expired vs invalid) to keep responses neutral
+        return res.status(401).json({ error: "Access denied: invalid token." });
     }
 };
