@@ -1,130 +1,122 @@
-// Import express to create a router
+// backend/routes/cocktail.routes.js
 import express from "express";
-
-// Multer is used for file uploads (e.g., cocktail images)
 import multer from "multer";
+import fs from "fs/promises";
 import path from "path";
-
-// Import validators
+import { fileTypeFromBuffer } from "file-type";
 import { body, param, validationResult } from "express-validator";
 
-// Import controller functions (business logic)
 import {
     createCocktail,
     getAllCocktails,
     getCocktailById,
 } from "../controllers/cocktail.controller.js";
-
-// Middleware to protect routes (only logged-in users can create cocktails)
 import { verifyToken } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-/**
- * Validation helper middleware
- * -----------------------------------
- * Same as in auth.routes.js:
- * - Run given validation rules
- * - If errors → return HTTP 400 with { field, msg }
- * - If no errors → continue to controller
- */
+// ---------- validation helper ----------
 const validate = (rules) => [
     ...rules,
     (req, res, next) => {
         const result = validationResult(req);
         if (!result.isEmpty()) {
-            const details = result.array().map((e) => ({
-                field: e.param,
-                msg: e.msg,
-            }));
+            const details = result.array().map((e) => ({ field: e.param, msg: e.msg }));
             return res.status(400).json({ error: "Invalid data", details });
         }
         next();
     },
 ];
 
-/**
- * Multer configuration
- * -----------------------------------
- * - Storage: saves files to "uploads/" folder with unique filename
- * - fileFilter: only allow PNG, JPG, JPEG, WEBP
- * - limits: max size 2 MB
- */
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, "uploads/"),
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname).toLowerCase();
-        const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-        cb(null, unique);
+// ---------- Multer (memory + early mimetype check) ----------
+const allowedMimes = ["image/png", "image/jpeg", "image/webp"];
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { files: 1, fileSize: 2 * 1024 * 1024 }, // 2 MB
+    fileFilter: (req, file, cb) => {
+        // Best-effort early filter; the magic-bytes check below is the strong gate.
+        if (!allowedMimes.includes(file.mimetype)) {
+            return cb(new multer.MulterError("LIMIT_UNEXPECTED_FILE", "image"));
+        }
+        cb(null, true);
     },
 });
 
-const fileFilter = (req, file, cb) => {
-    const ok = ["image/png", "image/jpg", "image/jpeg", "image/webp"].includes(
-        file.mimetype
-    );
-    if (!ok) return cb(new Error("Only PNG/JPG/JPEG/WEBP allowed"));
-    cb(null, true);
+// ---------- Normalize + strong validation ----------
+const ensureImageMagicBytes = async (req, res, next) => {
+    try {
+        // If client used a different field name, normalize to req.file
+        if (!req.file && Array.isArray(req.files) && req.files.length > 0) {
+            req.file = req.files[0];
+        }
+
+        // No file at all → creating cocktail without image is allowed
+        if (!req.file) return next();
+
+        const detected = await fileTypeFromBuffer(req.file.buffer);
+        if (!detected || !allowedMimes.includes(detected.mime)) {
+            // A file was sent but it's not a permitted image
+            return res.status(400).json({ error: "Only PNG/JPEG/WEBP allowed" });
+        }
+
+        const uploadsDir = path.resolve(process.cwd(), "backend", "uploads");
+        await fs.mkdir(uploadsDir, { recursive: true });
+
+        const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${detected.ext}`;
+        const fullPath = path.join(uploadsDir, filename);
+        await fs.writeFile(fullPath, req.file.buffer);
+
+        // Populate Multer-like fields expected by the controller
+        req.file.path = fullPath;
+        req.file.filename = filename;
+        req.file.mimetype = detected.mime;
+        req.file.size = req.file.buffer.length;
+        delete req.file.buffer;
+
+        next();
+    } catch (err) {
+        next(err);
+    }
 };
 
-const upload = multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
-});
-
 /**
- * POST /api/cocktails
- * -------------------------
- * Protected route → user must be logged in.
- * Accepts form-data with optional "image" file.
- * Validation:
- * - name: required string, trimmed, sanitized
- * - instructions: optional string
- * - alcoholic: optional boolean
- * - ingredients: optional array OR JSON string (controller handles parsing)
+ * Safety net: if the client tried to send *some* file (any field),
+ * but we ended up with no valid req.file, fail with 400 so we don't
+ * silently "succeed without image".
  */
+const requireValidImageIfProvided = (req, res, next) => {
+    const triedToUpload =
+        (Array.isArray(req.files) && req.files.length > 0) ||
+        typeof req.body.image !== "undefined";
+
+    if (triedToUpload && !req.file) {
+        return res
+            .status(400)
+            .json({ error: "Invalid image. Only PNG/JPEG/WEBP up to 2MB." });
+    }
+    next();
+};
+
+// ---------- Routes ----------
+
 router.post(
     "/",
     verifyToken,
-    upload.single("image"),
+    upload.any(),               // capture file regardless of field name
+    ensureImageMagicBytes,      // strong validation + safe disk write
+    requireValidImageIfProvided,
     validate([
-        body("name")
-            .isString()
-            .trim()
-            .notEmpty()
-            .withMessage("name is required")
-            .escape(),
-        body("instructions").optional().isString().trim().escape(),
-        body("alcoholic")
-            .optional()
-            .isBoolean()
-            .withMessage("alcoholic must be boolean"),
-        body("ingredients")
-            .optional()
-            .custom((val) => {
-                if (Array.isArray(val)) return true;
-                if (typeof val === "string") return true; // JSON string will be parsed later
-                throw new Error("ingredients must be array or JSON string");
-            }),
+        body("name").isString().trim().isLength({ min: 2, max: 100 }).withMessage("name must be 2–100 chars"),
+        body("instructions").optional().isString().trim().isLength({ max: 4000 }),
+        body("alcoholic").optional().isBoolean().withMessage("alcoholic must be boolean"),
+        body("ingredients").optional().custom((v) => Array.isArray(v) || typeof v === "string"),
     ]),
     createCocktail
 );
 
-/**
- * GET /api/cocktails
- * -------------------------
- * Public route: returns a list of cocktails.
- */
 router.get("/", getAllCocktails);
 
-/**
- * GET /api/cocktails/:id
- * -------------------------
- * Public route: get cocktail by ID.
- * Validation:
- * - id must be a valid MongoDB ObjectId
- */
 router.get(
     "/:id",
     validate([param("id").isMongoId().withMessage("Invalid id")]),
