@@ -1,28 +1,22 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useSidebarStore } from '../stores/sidebar'
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL
 
 const sidebar = useSidebarStore()
 
-const isMobile = ref(window.innerWidth < 768)
-const updateIsMobile = () => {
-    isMobile.value = window.innerWidth < 768
-}
-
+const isMobile = ref(typeof window !== 'undefined' ? window.innerWidth < 768 : false)
+const updateIsMobile = () => { isMobile.value = window.innerWidth < 768 }
 if (typeof window !== 'undefined') {
     window.addEventListener('resize', updateIsMobile)
     onBeforeUnmount(() => window.removeEventListener('resize', updateIsMobile))
 }
-
-const paddingClass = computed(() => {
-    return isMobile.value
-        ? sidebar.isOpen
-            ? 'pl-[calc(256px+1.5rem)] pr-6 pt-6'
-            : 'px-6 pt-6'
+const paddingClass = computed(() =>
+    isMobile.value
+        ? (sidebar.isOpen ? 'pl-[calc(256px+1.5rem)] pr-6 pt-6' : 'px-6 pt-6')
         : 'pl-[calc(256px+1.5rem)] pr-6 pt-6'
-})
+)
 
 const ingredientsList = ref([])
 const newIngredient = ref('')
@@ -35,80 +29,91 @@ const form = ref({
     alcoholic: false,
 })
 
-const previewImage = computed(() =>
-    imageFile.value ? URL.createObjectURL(imageFile.value) : '/default-cocktail.jpg'
-)
-
 const success = ref(false)
 const error = ref('')
+const loading = ref(false)
+
+const previewImage = ref('/default-cocktail.jpg')
+watch(imageFile, (f, old) => {
+    if (old && old instanceof File && previewImage.value?.startsWith('blob:')) {
+        URL.revokeObjectURL(previewImage.value)
+    }
+    previewImage.value = f ? URL.createObjectURL(f) : '/default-cocktail.jpg'
+})
 
 const fetchIngredients = async () => {
     try {
         const res = await fetch(`${API_URL}/api/cocktails`)
         const data = await res.json()
         const allIngredients = data.flatMap(c => c.ingredients || [])
-        ingredientsList.value = [...new Set(allIngredients)].sort((a, b) =>
-            a.localeCompare(b)
-        )
+        ingredientsList.value = [...new Set(allIngredients)].sort((a, b) => a.localeCompare(b))
     } catch (err) {
-        console.error('Failed to load ingredients.')
+        console.error('Failed to load ingredients.', err)
     }
 }
-
 onMounted(fetchIngredients)
 
 const addIngredient = () => {
     const trimmed = newIngredient.value.trim()
-    if (trimmed && !ingredientsList.value.includes(trimmed)) {
-        ingredientsList.value.push(trimmed)
-    }
-    if (trimmed && !selectedIngredients.value.includes(trimmed)) {
-        selectedIngredients.value.push(trimmed)
-    }
+    if (!trimmed) return
+    if (!ingredientsList.value.includes(trimmed)) ingredientsList.value.push(trimmed)
+    if (!selectedIngredients.value.includes(trimmed)) selectedIngredients.value.push(trimmed)
     newIngredient.value = ''
 }
-
-const handleImageUpload = e => {
+const handleImageUpload = (e) => {
     const file = e.target?.files?.[0]
-    if (file) {
-        imageFile.value = file
-    }
+    if (file) imageFile.value = file
 }
 
 const submitCocktail = async () => {
+    success.value = false
+    error.value = ''
+
     if (!form.value.name.trim()) {
         error.value = 'Name is required.'
+        return
+    }
+
+    const token = localStorage.getItem('token')?.replace(/^"|"$/g, '')
+    if (!token) {
+        error.value = 'You must be logged in to create a cocktail.'
         return
     }
 
     const fd = new FormData()
     fd.append('name', form.value.name)
     fd.append('instructions', form.value.instructions)
-    fd.append('alcoholic', form.value.alcoholic)
+    fd.append('alcoholic', String(form.value.alcoholic))
     fd.append('ingredients', JSON.stringify(selectedIngredients.value))
-    if (imageFile.value) {
-        fd.append('image', imageFile.value)
-    }
+    if (imageFile.value) fd.append('image', imageFile.value)
 
+    loading.value = true
     try {
         const res = await fetch(`${API_URL}/api/cocktails`, {
             method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
             body: fd,
         })
 
         if (!res.ok) {
-            const errorData = await res.json()
-            throw new Error(errorData.message || 'Failed to create cocktail.')
+            let msg = 'Failed to create cocktail.'
+            try {
+                const data = await res.json()
+                msg = data.error || data.message || msg
+            } catch { }
+            throw new Error(msg)
         }
 
         success.value = true
-        error.value = ''
         form.value = { name: '', instructions: '', alcoholic: false }
         selectedIngredients.value = []
         imageFile.value = null
-    } catch (err) {
-        error.value = err.message
-        success.value = false
+        previewImage.value = '/default-cocktail.jpg'
+        await fetchIngredients()
+    } catch (e) {
+        error.value = e.message || 'Failed to create cocktail.'
+    } finally {
+        loading.value = false
     }
 }
 </script>
@@ -158,7 +163,7 @@ const submitCocktail = async () => {
                     class="w-full xl:w-[28rem] min-h-[180px] px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 resize-none"></textarea>
 
                 <div class="flex flex-col items-center w-full xl:w-[28rem] gap-1">
-                    <input id="fileUpload" type="file" @change="handleImageUpload" class="hidden" />
+                    <input id="fileUpload" type="file" accept="image/*" @change="handleImageUpload" class="hidden" />
                     <label for="fileUpload"
                         class="cursor-pointer inline-block bg-pink-500 hover:bg-pink-600 text-white font-semibold px-4 py-2 rounded-md text-sm">
                         Upload Cocktail Image
@@ -201,10 +206,12 @@ const submitCocktail = async () => {
                     </div>
                 </div>
             </div>
-            <button @click="submitCocktail"
-                class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-bold">
-                Create Cocktail
+
+            <button @click="submitCocktail" :disabled="loading"
+                class="bg-red-500 hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-bold">
+                {{ loading ? 'Creating…' : 'Create Cocktail' }}
             </button>
+
             <p v-if="success || error" :class="{
                 'text-green-500': success,
                 'text-red-500': error
