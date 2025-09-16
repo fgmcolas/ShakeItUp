@@ -14,21 +14,32 @@ const cocktails = ref([]);
 const error = ref('');
 
 onMounted(async () => {
-    if (!auth.user.value?.id || !auth.token.value) {
+    // Use either _id or id depending on how your auth store is shaped
+    const uid = auth.user.value?._id || auth.user.value?.id;
+    const token = auth.token.value;
+
+    if (!uid || !token) {
         error.value = 'User not authenticated.';
         loading.value = false;
         return;
     }
 
     try {
-        const res = await fetch(`${API_URL}/api/users/${auth.user.value.id}`, {
-            headers: {
-                Authorization: `Bearer ${auth.token.value}`,
-            },
+        // Ask backend to populate favorites so we get full cocktail docs
+        const res = await fetch(`${API_URL}/api/users/${uid}?populate=favorites`, {
+            headers: { Authorization: `Bearer ${token}` },
         });
 
+        if (!res.ok) {
+            const msg = await res.text().catch(() => '');
+            throw new Error(msg || `HTTP ${res.status}`);
+        }
+
         const data = await res.json();
-        cocktails.value = data.favorites || [];
+
+        // Ensure we store only cocktail objects (not ids)
+        const favs = Array.isArray(data?.favorites) ? data.favorites : [];
+        cocktails.value = favs.filter(Boolean);
     } catch (err) {
         console.error('Failed to load favorites:', err);
         error.value = 'Failed to load favorites.';
@@ -40,9 +51,7 @@ onMounted(async () => {
 
 <template>
     <div :class="`pt-6 text-white ${paddingClass}`">
-        <h1 class="text-3xl font-bold mb-6">
-            ❤️ My Favorite Cocktails
-        </h1>
+        <h1 class="text-3xl font-bold mb-6">❤️ My Favorite Cocktails</h1>
 
         <div v-if="loading" class="text-gray-400">Loading...</div>
         <div v-else-if="error" class="text-red-400">{{ error }}</div>
