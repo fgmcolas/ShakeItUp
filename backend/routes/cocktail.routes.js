@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import fs from "fs/promises";
 import path from "path";
+import os from "os";
 import { fileTypeFromBuffer } from "file-type";
 import { body, param, validationResult } from "express-validator";
 
@@ -42,7 +43,24 @@ const upload = multer({
     },
 });
 
-// ---------- Normalize + strong validation ----------
+// ---------- helpers: save buffer to /tmp ----------
+
+/**
+ * Save buffer to /tmp (Heroku writable, but ephemeral).
+ * Returns { fullPath, filename }.
+ */
+async function saveBufferToTmp(buffer, ext) {
+    // On Heroku the only reliable writable dir is /tmp. Files are ephemeral.
+    const uploadsDir = process.env.UPLOADS_DIR || path.join(os.tmpdir(), "uploads");
+    await fs.mkdir(uploadsDir, { recursive: true });
+
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+    const fullPath = path.join(uploadsDir, filename);
+    await fs.writeFile(fullPath, buffer);
+    return { fullPath, filename };
+}
+
+// ---------- Normalize + strong validation + store ----------
 const ensureImageMagicBytes = async (req, res, next) => {
     try {
         // Normalize: if Multer stored files in req.files, pick the first one
@@ -59,18 +77,15 @@ const ensureImageMagicBytes = async (req, res, next) => {
             return res.status(400).json({ error: "Only PNG/JPEG/WEBP allowed" });
         }
 
-        // Ensure upload folder exists
-        const uploadsDir = path.resolve("backend", "uploads");
-        await fs.mkdir(uploadsDir, { recursive: true });
-
-        // Create safe filename and write to disk
-        const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${detected.ext}`;
-        const fullPath = path.join(uploadsDir, filename);
-        await fs.writeFile(fullPath, req.file.buffer);
+        // Save to /tmp (Heroku). Remember: ephemeral storage.
+        const { fullPath, filename } = await saveBufferToTmp(
+            req.file.buffer,
+            detected.ext
+        );
 
         // Populate Multer-like fields so controller can use them
-        req.file.path = fullPath;
-        req.file.filename = filename;
+        req.file.path = fullPath;        // absolute path in /tmp
+        req.file.filename = filename;    // file name saved
         req.file.mimetype = detected.mime;
         req.file.size = req.file.buffer.length;
         delete req.file.buffer; // free memory
@@ -105,13 +120,23 @@ router.post(
     "/",
     verifyToken,
     upload.any(),               // capture file regardless of field name
-    ensureImageMagicBytes,      // strong validation + safe disk write
+    ensureImageMagicBytes,      // strong validation + safe write to /tmp
     requireValidImageIfProvided,
     validate([
-        body("name").isString().trim().isLength({ min: 2, max: 100 }).withMessage("name must be 2–100 chars"),
+        body("name")
+            .isString()
+            .trim()
+            .isLength({ min: 2, max: 100 })
+            .withMessage("name must be 2–100 chars"),
         body("instructions").optional().isString().trim().isLength({ max: 4000 }),
-        body("alcoholic").optional().isBoolean().withMessage("alcoholic must be boolean"),
-        body("ingredients").optional().custom((v) => Array.isArray(v) || typeof v === "string"),
+        body("alcoholic")
+            .optional()
+            .isBoolean()
+            .withMessage("alcoholic must be boolean"),
+        // Accept either an array or a JSON string representation of an array
+        body("ingredients")
+            .optional()
+            .custom((v) => Array.isArray(v) || typeof v === "string"),
     ]),
     createCocktail
 );
