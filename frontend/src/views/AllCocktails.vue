@@ -1,10 +1,9 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useSidebarPadding } from '../composables/useSidebarPadding';
 import CocktailCard from '../components/CocktailCard.vue';
 
 const { paddingClass } = useSidebarPadding();
-
 const API_URL = import.meta.env.VITE_API_URL;
 
 const cocktails = ref([]);
@@ -22,6 +21,37 @@ const alcoholTypes = ['Gin', 'Rum', 'Tequila', 'Vodka', 'Whiskey', 'Triple Sec']
 const flavorStyles = ['Sweet', 'Spicy', 'Fruity', 'Bitter', 'Citrusy'];
 const ingredientsList = ref([]);
 
+// --- Row-based pagination state ---
+const gridRef = ref(null);
+const rowsToShow = ref(2);  // start with 2 rows
+const columns = ref(1);     // current column count (computed from CSS)
+
+/**
+ * Compute the number of columns by reading grid-template-columns from the grid element.
+ * This adapts to responsive breakpoints (sm/md/lg/etc.).
+ */
+const computeColumns = () => {
+    if (!gridRef.value) return;
+    const style = window.getComputedStyle(gridRef.value);
+    const tpl = style.gridTemplateColumns || '';
+    const count = tpl.split(' ').filter(Boolean).length || 1;
+    columns.value = count;
+};
+
+const onResize = () => {
+    // Use rAF to avoid layout thrashing on continuous resize
+    requestAnimationFrame(computeColumns);
+};
+
+onMounted(() => {
+    window.addEventListener('resize', onResize, { passive: true });
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', onResize);
+});
+// --- end row-based pagination state ---
+
 const fetchCocktails = async () => {
     try {
         const res = await fetch(`${API_URL}/api/cocktails`);
@@ -34,6 +64,8 @@ const fetchCocktails = async () => {
         error.value = 'Failed to load cocktails.';
     } finally {
         loading.value = false;
+        await nextTick(); // ensure grid is in DOM before measuring columns
+        computeColumns();
     }
 };
 
@@ -47,6 +79,7 @@ const filteredCocktails = computed(() => {
             cocktail.name.toLowerCase().includes(query) ||
             cocktail.ingredients.some(i => i.toLowerCase().includes(query));
 
+        // Note: "Non-alcoholic only" => must be strictly non-alcoholic
         const matchesAlcohol =
             !alcoholOnly.value || cocktail.alcoholic === false;
 
@@ -97,6 +130,22 @@ const filteredCocktails = computed(() => {
     return results;
 });
 
+// Visible slice = rowsToShow * columns (adapts to breakpoints)
+const maxVisible = computed(() => rowsToShow.value * columns.value);
+const visibleCocktails = computed(() => filteredCocktails.value.slice(0, maxVisible.value));
+
+// Reset to 2 rows whenever filters change
+watch(
+    () => [
+        search.value, alcoholOnly.value, officialOnly.value,
+        selectedAlcohol.value, selectedFlavor.value, selectedIngredient.value, sortOption.value
+    ],
+    () => { rowsToShow.value = 2; }
+);
+
+// Actions
+const loadMoreRows = () => { rowsToShow.value += 2; };
+
 const resetFilters = () => {
     search.value = '';
     alcoholOnly.value = false;
@@ -105,6 +154,7 @@ const resetFilters = () => {
     selectedFlavor.value = '';
     selectedIngredient.value = '';
     sortOption.value = '';
+    rowsToShow.value = 2;
 };
 </script>
 
@@ -171,9 +221,17 @@ const resetFilters = () => {
             No cocktails match your filters.
         </div>
 
-        <!-- Cocktails Grid -->
-        <div class="px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 slg:grid-cols-4 xxl:grid-cols-5 gap-6">
-            <CocktailCard v-for="cocktail in filteredCocktails" :key="cocktail._id" :cocktail="cocktail" />
+        <!-- Cocktails Grid (row-paginated) -->
+        <div ref="gridRef"
+            class="px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 slg:grid-cols-4 xxl:grid-cols-5 gap-6">
+            <CocktailCard v-for="cocktail in visibleCocktails" :key="cocktail._id" :cocktail="cocktail" />
+        </div>
+
+        <!-- Pagination button -->
+        <div v-if="visibleCocktails.length < filteredCocktails.length" class="px-6 mt-6 flex justify-center">
+            <button @click="loadMoreRows" class="px-4 py-2 mb-6 rounded bg-gray-600 text-white hover:bg-gray-500">
+                Load more
+            </button>
         </div>
     </div>
 </template>
