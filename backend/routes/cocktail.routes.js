@@ -44,7 +44,6 @@ const upload = multer({
 });
 
 // ---------- helpers: save buffer to /tmp ----------
-
 /**
  * Save buffer to /tmp (Heroku writable, but ephemeral).
  * Returns { fullPath, filename }.
@@ -88,11 +87,13 @@ const ensureImageMagicBytes = async (req, res, next) => {
         req.file.filename = filename;    // file name saved
         req.file.mimetype = detected.mime;
         req.file.size = req.file.buffer.length;
-        delete req.file.buffer; // free memory
 
         next();
     } catch (err) {
-        next(err);
+        console.error("Image processing error:", err);
+        return res
+            .status(400)
+            .json({ error: "Image processing failed", details: String(err.message || err) });
     }
 };
 
@@ -115,7 +116,6 @@ const requireValidImageIfProvided = (req, res, next) => {
 };
 
 // ---------- Routes ----------
-
 router.post(
     "/",
     verifyToken,
