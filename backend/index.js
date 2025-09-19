@@ -71,6 +71,7 @@ app.use(
         referrerPolicy: { policy: "no-referrer" },
         crossOriginOpenerPolicy: { policy: "same-origin" },
         crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: { policy: "cross-origin" },
     })
 );
 
