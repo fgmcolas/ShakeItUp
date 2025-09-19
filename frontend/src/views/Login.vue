@@ -54,7 +54,7 @@ const handleSubmit = async () => {
             token: data.token,
         });
 
-        router.push('/');
+        router.push('/dashboard');
     } catch (e) {
         error.value = 'Network error. Please try again.';
     } finally {
