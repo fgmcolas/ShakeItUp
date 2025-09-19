@@ -73,7 +73,7 @@ const ensureImageMagicBytes = async (req, res, next) => {
         // Detect real file type by magic bytes (buffer content)
         const detected = await fileTypeFromBuffer(req.file.buffer);
         if (!detected || !allowedMimes.includes(detected.mime)) {
-            return res.status(400).json({ error: "Only PNG/JPEG/WEBP allowed" });
+            return next(new multer.MulterError("LIMIT_UNEXPECTED_FILE", "image"));
         }
 
         // Save to /tmp (Heroku). Remember: ephemeral storage.
@@ -108,9 +108,7 @@ const requireValidImageIfProvided = (req, res, next) => {
         typeof req.body.image !== "undefined";
 
     if (triedToUpload && !req.file) {
-        return res
-            .status(400)
-            .json({ error: "Invalid image. Only PNG/JPEG/WEBP up to 2MB." });
+        return next({ statusCode: 400, message: "Invalid image. Only PNG/JPEG/WEBP up to 2MB." });
     }
     next();
 };

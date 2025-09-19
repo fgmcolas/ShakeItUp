@@ -17,12 +17,19 @@ export function notFound(req, res, next) {
  */
 export function errorHandler(err, req, res, next) {
     // Multer (uploads) — file too large, bad field, etc.
-    if (err instanceof multer.MulterError) {
+    if (err?.name === "MulterError" || err instanceof multer.MulterError) {
         if (process.env.NODE_ENV !== "production") {
             console.error("[MULTER ERROR]", err);
         }
+
         if (err.code === "LIMIT_FILE_SIZE") {
             return res.status(400).json({ error: "Image too large (max 2MB)" });
+        }
+        if (err.code === "LIMIT_UNEXPECTED_FILE") {
+            return res.status(400).json({ error: "Invalid file format" });
+        }
+        if (err.code === "LIMIT_FILE_COUNT") {
+            return res.status(400).json({ error: "Only one image allowed" });
         }
         return res.status(400).json({ error: err.message || "Upload error" });
     }
