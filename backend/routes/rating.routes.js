@@ -5,6 +5,7 @@ import { verifyToken } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+// Collect validation errors from express-validator
 const validate = (rules) => [
     ...rules,
     (req, res, next) => {
