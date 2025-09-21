@@ -14,7 +14,7 @@ const CocktailSchema = new mongoose.Schema(
         name: {
             type: String,
             required: true,
-            unique: true,   // <-- keep this
+            unique: true, // keep unique index on field
             trim: true,
             minlength: 2,
             maxlength: 100,
@@ -24,8 +24,7 @@ const CocktailSchema = new mongoose.Schema(
             type: [String],
             default: [],
             validate: {
-                validator: (arr) =>
-                    arr.every((s) => typeof s === "string" && s.trim().length <= 64),
+                validator: (arr) => arr.every((s) => typeof s === "string" && s.trim().length <= 64),
                 message: "Each ingredient must be a string ≤ 64 characters.",
             },
         },
@@ -43,10 +42,5 @@ const CocktailSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-/**
- * NOTE:
- * Do NOT duplicate the "name" unique index with Schema.index().
- * Field-level `unique: true` above is sufficient.
- */
-
+// Note: No extra index for name; field-level unique is enough.
 export default mongoose.model("Cocktail", CocktailSchema);
