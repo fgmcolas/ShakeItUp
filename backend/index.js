@@ -16,46 +16,36 @@ import rateLimit from "express-rate-limit";
 // Error handling middleware
 import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
-// Route modules
+// Routes
 import authRoutes from "./routes/auth.routes.js";
 import cocktailRoutes from "./routes/cocktail.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import ratingRoutes from "./routes/rating.routes.js";
 
-// Load environment variables from .env file
+// Load environment variables
 dotenv.config();
 
 // Resolve __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Initialize Express app
+// Initialize Express
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Honor proxy headers when behind a reverse proxy (nginx, etc.)
+// Trust proxy headers (Heroku, Nginx, etc.)
 app.set("trust proxy", 1);
 
-/**
- * ------------------------------------------------------------------
- * FILE SYSTEM PREP
- * ------------------------------------------------------------------
- */
+// Uploads directory
 const uploadsDir = path.resolve(__dirname, process.env.UPLOADS_DIR || "uploads");
 if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-/**
- * ------------------------------------------------------------------
- * GLOBAL MIDDLEWARES
- * ------------------------------------------------------------------
- */
-
-// Remove "X-Powered-By: Express" header
+// Remove X-Powered-By header
 app.disable("x-powered-by");
 
-// Security headers (helmet) + conservative CSP
+// Security headers
 app.use(
     helmet({
         contentSecurityPolicy: {
@@ -75,7 +65,7 @@ app.use(
     })
 );
 
-// HSTS only in production
+// HSTS (production only)
 if (process.env.NODE_ENV === "production") {
     app.use(
         helmet.hsts({
@@ -86,7 +76,7 @@ if (process.env.NODE_ENV === "production") {
     );
 }
 
-// CORS whitelist
+// CORS
 const allowedOrigins = (process.env.CORS_ORIGINS || "")
     .split(",")
     .map((s) => s.trim())
@@ -104,22 +94,16 @@ app.use(
     })
 );
 
-// Logging (dev only)
+// Logging (development only)
 if (process.env.NODE_ENV !== "production") {
     app.use(morgan("dev"));
 }
 
-// JSON parser with conservative limit
+// JSON parser with limit
 const maxJsonKb = Number(process.env.MAX_JSON_KB || 1024);
-app.use(express.json({ limit: `${maxJsonKb}kb` }));
+app.use(express.json({ limit: `${maxJsonKb}kb` })); // default = 1024kb (1 MB)
 
-/**
- * ------------------------------------------------------------------
- * BASIC ANTI–NoSQL INJECTION (Express 5 safe)
- * ------------------------------------------------------------------
- * Deeply removes keys starting with "$" or containing "." from req.body & req.params.
- * We purposely DO NOT touch req.query to avoid Express 5 getter issues.
- */
+// Basic NoSQL injection guard
 function deepSanitize(obj) {
     if (!obj || typeof obj !== "object") return;
     for (const key of Object.keys(obj)) {
@@ -135,69 +119,51 @@ function deepSanitize(obj) {
 app.use((req, res, next) => {
     deepSanitize(req.body);
     deepSanitize(req.params);
-    // If one day you need to sanitize query too, clone it first and sanitize the clone,
-    // but avoid reassigning req.query on Express 5.
     next();
 });
 
-// Static serving for uploaded images
+// Static files (uploads)
 app.use(
     "/uploads",
     express.static(uploadsDir, {
         fallthrough: true,
         setHeaders: (res) => {
             res.setHeader("X-Content-Type-Options", "nosniff");
-            res.setHeader("Cache-Control", "public, max-age=3600");
+            res.setHeader("Cache-Control", "public, max-age=3600"); // cache 1 hour
             res.setHeader("Content-Disposition", "inline");
         },
     })
 );
 
-/**
- * ------------------------------------------------------------------
- * RATE LIMITING
- * ------------------------------------------------------------------
- */
+// Rate limiting
 const apiLimiter = rateLimit({
-    windowMs: 60 * 1000,
-    limit: 120,
+    windowMs: 60 * 1000, // 1 minute
+    limit: 120,          // max 120 requests per minute
     standardHeaders: "draft-7",
     legacyHeaders: false,
 });
 app.use("/api", apiLimiter);
 
 const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 10,
+    windowMs: 15 * 60 * 1000, //15 minutes
+    limit: 10,                // max 10 attempts per window
     standardHeaders: "draft-7",
     legacyHeaders: false,
     message: { error: "Too many login/register attempts, please try later." },
 });
 app.use("/api/auth", authLimiter);
 
-/**
- * ------------------------------------------------------------------
- * ROUTES
- * ------------------------------------------------------------------
- */
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/cocktails", cocktailRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/ratings", ratingRoutes);
 
-/**
- * ------------------------------------------------------------------
- * ERROR HANDLING
- * ------------------------------------------------------------------
- */
+// Error handling
 app.use(notFound);
 app.use(errorHandler);
 
-/**
- * ------------------------------------------------------------------
- * DATABASE + SERVER BOOT
- * ------------------------------------------------------------------
- */
+// Database connection and server start
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => {
