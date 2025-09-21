@@ -1,4 +1,5 @@
 <script setup>
+// Collapsible sidebar with auth-aware links
 import { computed } from 'vue';
 import { useRoute, useRouter, RouterLink } from 'vue-router';
 import { Menu, X } from 'lucide-vue-next';
@@ -10,12 +11,12 @@ const route = useRoute();
 const router = useRouter();
 const auth = useAuth();
 
-const isLoggedIn = computed(() => !!auth.user?.value?.id);
+// Consider user logged in if id exists (supports id/_id shapes)
+const isLoggedIn = computed(() => !!auth.user?.value?.id || !!auth.user?.value?._id);
 
+// Active link styles
 const linkClass = (path) =>
-    `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path
-        ? 'bg-cocktail-glow-light/30 font-semibold text-white'
-        : 'text-white'
+    `block px-4 py-2 rounded hover:bg-cocktail-glow-light/20 transition ${route.path === path ? 'bg-cocktail-glow-light/30 font-semibold text-white' : 'text-white'
     }`;
 
 const handleLogout = () => {
@@ -51,19 +52,14 @@ const handleLogout = () => {
 
                 <!-- Navigation Links -->
                 <nav class="p-4 space-y-2">
-                    <RouterLink to="/cocktails" :class="linkClass('/cocktails')" @click="sidebar.close">
-                        🍹 All Cocktails
+                    <RouterLink to="/cocktails" :class="linkClass('/cocktails')" @click="sidebar.close">🍹 All Cocktails
                     </RouterLink>
-                    <RouterLink to="/ingredients" :class="linkClass('/ingredients')" @click="sidebar.close">
-                        🧂 My Ingredients
-                    </RouterLink>
-                    <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')" @click="sidebar.close">
-                        🍸 Creation
-                    </RouterLink>
+                    <RouterLink to="/ingredients" :class="linkClass('/ingredients')" @click="sidebar.close">🧂 My
+                        Ingredients</RouterLink>
+                    <RouterLink v-if="isLoggedIn" to="/create" :class="linkClass('/create')" @click="sidebar.close">🍸
+                        Creation</RouterLink>
                     <RouterLink v-if="isLoggedIn" to="/favorites" :class="linkClass('/favorites')"
-                        @click="sidebar.close">
-                        ❤️ Favorites
-                    </RouterLink>
+                        @click="sidebar.close">❤️ Favorites</RouterLink>
                 </nav>
             </div>
 
