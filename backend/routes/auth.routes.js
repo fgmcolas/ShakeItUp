@@ -4,6 +4,7 @@ import { register, login } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
+// Collects validation errors from express-validator
 const validate = (rules) => [
     ...rules,
     (req, res, next) => {
@@ -17,6 +18,7 @@ const validate = (rules) => [
 ];
 
 // POST /api/auth/register
+// email must be valid; username 3–30 chars; password 8–128 chars
 router.post(
     "/register",
     validate([
@@ -33,6 +35,7 @@ router.post(
 );
 
 // POST /api/auth/login
+// username 3–30 chars; password required (non-empty)
 router.post(
     "/login",
     validate([
