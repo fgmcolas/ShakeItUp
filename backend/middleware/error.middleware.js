@@ -1,22 +1,13 @@
-/**
- * Centralized error handling
- * - Normalizes error responses
- * - Handles Multer limits and validation errors
- */
 import multer from "multer";
 
-/**
- * 404 for unknown routes
- */
+// 404 for unknown routes
 export function notFound(req, res, next) {
     res.status(404).json({ error: "Route not found" });
 }
 
-/**
- * Main error handler
- */
+// Centralized error handler
 export function errorHandler(err, req, res, next) {
-    // Multer (uploads) — file too large, bad field, etc.
+    // Multer upload errors (size, format, count...)
     if (err?.name === "MulterError" || err instanceof multer.MulterError) {
         if (process.env.NODE_ENV !== "production") {
             console.error("[MULTER ERROR]", err);
@@ -42,17 +33,15 @@ export function errorHandler(err, req, res, next) {
         return res.status(err.statusCode).json({ error: err.message });
     }
 
-    // Custom validation aggregator (optional usage from controllers)
+    // Validation aggregator (optional from controllers)
     if (err?.type === "validation") {
         if (process.env.NODE_ENV !== "production") {
             console.error("[VALIDATION ERROR]", err);
         }
-        return res
-            .status(400)
-            .json({ error: "Invalid data", details: err.details || [] });
+        return res.status(400).json({ error: "Invalid data", details: err.details || [] });
     }
 
-    // Common Mongo errors
+    // Mongo errors
     if (err?.name === "CastError") {
         if (process.env.NODE_ENV !== "production") {
             console.error("[CAST ERROR]", err);
