@@ -1,4 +1,12 @@
 <script setup>
+// CocktailDetails.vue
+// Single cocktail details page
+// Responsibilities:
+// - Fetch cocktail by id from backend
+// - Display favorite toggle + rating widget
+// - Show ingredients, instructions, and user comments
+// - Handle fallback image gracefully
+
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useSidebarPadding } from '../composables/useSidebarPadding.js';
@@ -7,13 +15,14 @@ import RatingDisplay from '../components/RatingDisplay.vue';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-const route = useRoute();
-const cocktail = ref(null);
-const error = ref('');
-const imageSrc = ref('/default-cocktail.jpg');
+const route = useRoute();             // get route params (cocktail id)
+const cocktail = ref(null);           // cocktail details from backend
+const error = ref('');                // error message if fetch fails
+const imageSrc = ref('/default-cocktail.jpg'); // fallback image
 
 const { paddingClass } = useSidebarPadding();
 
+// Fetch cocktail details from backend
 const fetchCocktail = async () => {
     try {
         const res = await fetch(`${API_URL}/api/cocktails/${route.params.id}`);
@@ -21,6 +30,7 @@ const fetchCocktail = async () => {
         const data = await res.json();
         cocktail.value = data;
 
+        // Update image only if provided and not empty
         if (data.image && data.image.trim() !== '') {
             imageSrc.value = data.image.trim();
         }
@@ -29,28 +39,33 @@ const fetchCocktail = async () => {
     }
 };
 
+// Reset to default if the image fails to load
 const handleImageError = () => {
     imageSrc.value = '/default-cocktail.jpg';
 };
 
+// Fetch cocktail on mount
 onMounted(fetchCocktail);
 </script>
 
 <template>
     <div :class="`h-full overflow-hidden px-12 py-8 text-white max-w-full ${paddingClass}`">
+        <!-- Error state -->
         <div v-if="error" class="text-red-500">{{ error }}</div>
 
+        <!-- Content (only if cocktail is loaded) -->
         <div v-else-if="cocktail" class="grid grid-cols-1 xl:grid-cols-[250px_1fr_300px] gap-8 h-full">
-            <!-- Favorites + Score + Ingredients -->
+
+            <!-- Left column: Favorite + Rating + Ingredients -->
             <div class="flex flex-col space-y-10">
-                <!-- Favorite + Score block -->
+                <!-- Favorite + Rating widget -->
                 <div class="bg-gray-900 p-4 rounded-xl shadow-lg flex flex-col items-center space-y-4">
                     <FavoriteButton :cocktailId="cocktail._id"
                         class="w-10 h-10 hover:scale-110 transition-transform duration-200" />
                     <RatingDisplay :cocktailId="cocktail._id" class="text-2xl font-bold text-yellow-400" />
                 </div>
 
-                <!-- Ingredients -->
+                <!-- Ingredients list -->
                 <div class="flex-1">
                     <h2 class="text-2xl font-semibold mb-2">Ingredients</h2>
                     <ul class="list-disc list-inside space-y-1">
@@ -59,12 +74,12 @@ onMounted(fetchCocktail);
                 </div>
             </div>
 
-            <!-- Center column: Title, Image, Instructions -->
+            <!-- Center column: Title + Image + Instructions -->
             <div class="flex flex-col justify-start max-w-4xl mx-auto w-full space-y-8">
                 <!-- Title -->
                 <h1 class="text-4xl font-bold text-center">{{ cocktail.name }}</h1>
 
-                <!-- Image with fallback -->
+                <!-- Image (with fallback) -->
                 <div class="flex justify-center">
                     <img :src="imageSrc"
                         :alt="imageSrc === '/default-cocktail.jpg' ? 'Default placeholder image' : 'Cocktail Image'"
@@ -79,7 +94,7 @@ onMounted(fetchCocktail);
                 </div>
             </div>
 
-            <!-- Comments -->
+            <!-- Right column: Comments -->
             <div class="pt-6">
                 <h2 class="text-2xl font-semibold mb-4">Comments</h2>
                 <div v-for="(rating, i) in cocktail.ratings" :key="i" class="mb-4 border-b border-gray-700 pb-2">
@@ -94,6 +109,7 @@ onMounted(fetchCocktail);
 </template>
 
 <style scoped>
+/* Prevent white background flash when images load in dark theme */
 img {
     background-color: #000;
 }
