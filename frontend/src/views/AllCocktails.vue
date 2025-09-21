@@ -1,4 +1,7 @@
 <script setup>
+// AllCocktails.vue
+// Main cocktails list with search, filters, sorting, and responsive row-based pagination.
+
 import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 import { useSidebarPadding } from '../composables/useSidebarPadding';
 import CocktailCard from '../components/CocktailCard.vue';
@@ -6,71 +9,66 @@ import CocktailCard from '../components/CocktailCard.vue';
 const { paddingClass } = useSidebarPadding();
 const API_URL = import.meta.env.VITE_API_URL;
 
-const cocktails = ref([]);
-const loading = ref(true);
-const error = ref('');
-const search = ref('');
-const alcoholOnly = ref(false);
-const officialOnly = ref(false);
-const selectedAlcohol = ref('');
-const selectedFlavor = ref('');
-const selectedIngredient = ref('');
-const sortOption = ref('');
+// Data + UI state
+const cocktails = ref([]);   // full dataset from backend
+const loading = ref(true);   // loading spinner
+const error = ref('');       // error message
 
+// Filters
+const search = ref('');              // free-text search (name + ingredients)
+const alcoholOnly = ref(false);      // show only non-alcoholic
+const officialOnly = ref(false);     // show only official recipes
+const selectedAlcohol = ref('');     // quick filter by alcohol keyword
+const selectedFlavor = ref('');      // exact match on flavorStyle
+const selectedIngredient = ref('');  // contains ingredient
+const sortOption = ref('');          // current sort key
+
+// Static filter options (front-side lists)
 const alcoholTypes = ['Gin', 'Rum', 'Tequila', 'Vodka', 'Whiskey', 'Triple Sec'];
 const flavorStyles = ['Sweet', 'Spicy', 'Fruity', 'Bitter', 'Citrusy'];
-const ingredientsList = ref([]);
+const ingredientsList = ref([]);     // filled from dataset
 
-// --- Row-based pagination state ---
-const gridRef = ref(null);
+// ---------- Responsive row-based pagination ----------
+const gridRef = ref(null);  // grid element (to read computed CSS columns)
 const rowsToShow = ref(2);  // start with 2 rows
-const columns = ref(1);     // current column count (computed from CSS)
+const columns = ref(1);     // computed from CSS grid
 
-/**
- * Compute the number of columns by reading grid-template-columns from the grid element.
- * This adapts to responsive breakpoints (sm/md/lg/etc.).
- */
+// Read the number of columns from CSS (adapts to breakpoints)
 const computeColumns = () => {
     if (!gridRef.value) return;
     const style = window.getComputedStyle(gridRef.value);
     const tpl = style.gridTemplateColumns || '';
     const count = tpl.split(' ').filter(Boolean).length || 1;
-    columns.value = count;
+    columns.value = count; // e.g., 1 / 2 / 3 / 4 / 5 depending on viewport
 };
 
-const onResize = () => {
-    // Use rAF to avoid layout thrashing on continuous resize
-    requestAnimationFrame(computeColumns);
-};
+// Debounced resize handler (via rAF) to avoid layout thrashing
+const onResize = () => requestAnimationFrame(computeColumns);
 
-onMounted(() => {
-    window.addEventListener('resize', onResize, { passive: true });
-});
+onMounted(() => window.addEventListener('resize', onResize, { passive: true }));
+onBeforeUnmount(() => window.removeEventListener('resize', onResize));
 
-onBeforeUnmount(() => {
-    window.removeEventListener('resize', onResize);
-});
-// --- end row-based pagination state ---
-
+// Fetch cocktails and build a unique, sorted ingredients list
 const fetchCocktails = async () => {
     try {
         const res = await fetch(`${API_URL}/api/cocktails`);
         const data = await res.json();
         cocktails.value = data;
 
-        const allIngredients = data.flatMap(c => c.ingredients);
+        const allIngredients = data.flatMap(c => c.ingredients || []);
         ingredientsList.value = [...new Set(allIngredients)].sort((a, b) => a.localeCompare(b));
-    } catch (err) {
+    } catch {
         error.value = 'Failed to load cocktails.';
     } finally {
         loading.value = false;
-        await nextTick(); // ensure grid is in DOM before measuring columns
+        await nextTick();   // make sure grid is in DOM before measuring
         computeColumns();
     }
 };
 
 onMounted(fetchCocktails);
 
+// Filter + sort pipeline (pure computed; cheap on small datasets)
 const filteredCocktails = computed(() => {
     let results = cocktails.value.filter(cocktail => {
         const query = search.value.toLowerCase();
@@ -79,23 +77,25 @@ const filteredCocktails = computed(() => {
             cocktail.name.toLowerCase().includes(query) ||
             cocktail.ingredients.some(i => i.toLowerCase().includes(query));
 
-        // Note: "Non-alcoholic only" => must be strictly non-alcoholic
-        const matchesAlcohol =
-            !alcoholOnly.value || cocktail.alcoholic === false;
+        // Non-alcoholic filter: must be strictly false
+        const matchesAlcohol = !alcoholOnly.value || cocktail.alcoholic === false;
 
-        const matchesOfficial =
-            !officialOnly.value || cocktail.officialRecipe === true;
+        // Official recipes filter
+        const matchesOfficial = !officialOnly.value || cocktail.officialRecipe === true;
 
+        // Alcohol keyword (simple contains on ingredients)
         const matchesSelectedAlcohol =
             !selectedAlcohol.value ||
             cocktail.ingredients.some(i =>
                 i.toLowerCase().includes(selectedAlcohol.value.toLowerCase())
             );
 
+        // Flavor exact match (case-insensitive)
         const matchesFlavor =
             !selectedFlavor.value ||
             cocktail.flavorStyle?.toLowerCase() === selectedFlavor.value.toLowerCase();
 
+        // Ingredient contains
         const matchesIngredient =
             !selectedIngredient.value ||
             cocktail.ingredients.some(i =>
@@ -112,6 +112,7 @@ const filteredCocktails = computed(() => {
         );
     });
 
+    // Sort AFTER filtering
     switch (sortOption.value) {
         case 'name-asc':
             results.sort((a, b) => a.name.localeCompare(b.name));
@@ -130,22 +131,26 @@ const filteredCocktails = computed(() => {
     return results;
 });
 
-// Visible slice = rowsToShow * columns (adapts to breakpoints)
+// Visible slice = rows * columns (auto-adapts to responsive grid)
 const maxVisible = computed(() => rowsToShow.value * columns.value);
 const visibleCocktails = computed(() => filteredCocktails.value.slice(0, maxVisible.value));
 
-// Reset to 2 rows whenever filters change
+// Reset pagination when any filter changes (back to 2 rows)
 watch(
     () => [
-        search.value, alcoholOnly.value, officialOnly.value,
-        selectedAlcohol.value, selectedFlavor.value, selectedIngredient.value, sortOption.value
+        search.value,
+        alcoholOnly.value,
+        officialOnly.value,
+        selectedAlcohol.value,
+        selectedFlavor.value,
+        selectedIngredient.value,
+        sortOption.value
     ],
     () => { rowsToShow.value = 2; }
 );
 
 // Actions
-const loadMoreRows = () => { rowsToShow.value += 2; };
-
+const loadMoreRows = () => { rowsToShow.value += 2; }; // show +2 rows each click
 const resetFilters = () => {
     search.value = '';
     alcoholOnly.value = false;
@@ -160,7 +165,7 @@ const resetFilters = () => {
 
 <template>
     <div :class="`pt-6 ${paddingClass}`">
-        <!-- Search Bar -->
+        <!-- Search -->
         <div class="px-6 mb-4">
             <input v-model="search" type="text" placeholder="Search cocktails by name or ingredients..."
                 class="w-full p-2 rounded bg-[#1e1e1e] text-white" />
@@ -212,22 +217,20 @@ const resetFilters = () => {
             </button>
         </div>
 
-        <!-- Loading / Error -->
+        <!-- Loading / Error / Empty states -->
         <div v-if="loading" class="text-white px-6">Loading...</div>
         <div v-else-if="error" class="text-red-400 px-6">{{ error }}</div>
-
-        <!-- No results -->
         <div v-else-if="filteredCocktails.length === 0" class="text-gray-400 px-6 text-center">
             No cocktails match your filters.
         </div>
 
-        <!-- Cocktails Grid (row-paginated) -->
+        <!-- Responsive grid (row-paginated) -->
         <div ref="gridRef"
             class="px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 slg:grid-cols-4 xxl:grid-cols-5 gap-6">
             <CocktailCard v-for="cocktail in visibleCocktails" :key="cocktail._id" :cocktail="cocktail" />
         </div>
 
-        <!-- Pagination button -->
+        <!-- Load more (adds 2 rows per click) -->
         <div v-if="visibleCocktails.length < filteredCocktails.length" class="px-6 mt-6 flex justify-center">
             <button @click="loadMoreRows" class="px-4 py-2 mb-6 rounded bg-gray-600 text-white hover:bg-gray-500">
                 Load more
