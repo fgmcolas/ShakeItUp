@@ -1,15 +1,11 @@
 import mongoose from "mongoose";
 
-// Simple email regex (server-side validation; routes should also validate)
+// Simple email regex (routes should also validate)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
 const UserSchema = new mongoose.Schema(
     {
-        /**
-         * Human-friendly username (case preserved for display)
-         * - We also store a lowercase version in "usernameLower" to enforce
-         *   case-insensitive uniqueness via an index.
-         */
+        // Display name (case preserved). We store usernameLower for CI uniqueness.
         username: {
             type: String,
             required: true,
@@ -27,25 +23,18 @@ const UserSchema = new mongoose.Schema(
             select: false, // not needed in normal queries
         },
 
-        /**
-         * Email
-         * - Stored in lowercase
-         * - Unique index (field-level)
-         */
+        // Email (lowercased). Unique index at field level.
         email: {
             type: String,
             required: true,
-            unique: true,   // <-- keep this
+            unique: true, // keep this
             trim: true,
             lowercase: true,
             maxlength: 254,
             match: EMAIL_REGEX,
         },
 
-        /**
-         * Password hash
-         * - Never selected by default for safety
-         */
+        // Password hash (bcrypt). Never selected by default.
         password: {
             type: String,
             required: true,
@@ -54,9 +43,7 @@ const UserSchema = new mongoose.Schema(
             select: false,
         },
 
-        /**
-         * Favorites / ingredients (example domain fields)
-         */
+        // Domain fields
         favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cocktail" }],
         ingredients: {
             type: [String],
@@ -70,16 +57,11 @@ const UserSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-/**
- * Indexes
- * - Unique usernameLower for case-insensitive username uniqueness
- * NOTE: Do NOT duplicate the email index; `email` already has `unique: true`.
- */
-UserSchema.index({ usernameLower: 1 }, { unique: true }); // keep this one
+// Case-insensitive uniqueness for username
+// Note: do not duplicate the unique index on email (already on field).
+UserSchema.index({ usernameLower: 1 }, { unique: true });
 
-/**
- * Pre-validate hook to ensure usernameLower consistency
- */
+// Keep usernameLower consistent with username
 UserSchema.pre("validate", function (next) {
     if (this.isModified("username")) {
         this.usernameLower = String(this.username || "").toLowerCase().trim();
