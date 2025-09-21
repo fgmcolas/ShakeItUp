@@ -1,36 +1,41 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSidebarPadding } from '../composables/useSidebarPadding';
+// Registration form
+// - Calls /api/auth/register
+// - On success: redirect to /login
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSidebarPadding } from '../composables/useSidebarPadding'
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL
 
-const router = useRouter();
-const { paddingClass } = useSidebarPadding();
+const router = useRouter()
+const { paddingClass } = useSidebarPadding()
 
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const error = ref('');
-const loading = ref(false);
+// Form state
+const username = ref('')
+const email = ref('')
+const password = ref('')
+const error = ref('')
+const loading = ref(false)
 
-
+// Extract backend error (same helper as Login.vue)
 async function extractApiError(res) {
-    const text = await res.text().catch(() => '');
-    if (!text) return `HTTP ${res.status}`;
+    const text = await res.text().catch(() => '')
+    if (!text) return `HTTP ${res.status}`
     try {
-        const data = JSON.parse(text);
-        const viaDetails = data?.details?.[0]?.msg;
-        const viaErr = data?.error || data?.message;
-        return viaDetails || viaErr || `HTTP ${res.status}`;
+        const data = JSON.parse(text)
+        const viaDetails = data?.details?.[0]?.msg
+        const viaErr = data?.error || data?.message
+        return viaDetails || viaErr || `HTTP ${res.status}`
     } catch {
-        return text;
+        return text
     }
 }
 
+// Submit registration
 const handleSubmit = async () => {
-    error.value = '';
-    loading.value = true;
+    error.value = ''
+    loading.value = true
 
     try {
         const res = await fetch(`${API_URL}/api/auth/register`, {
@@ -41,21 +46,22 @@ const handleSubmit = async () => {
                 email: email.value,
                 password: password.value,
             }),
-        });
+        })
 
         if (!res.ok) {
-            error.value = await extractApiError(res);
-            return;
+            error.value = await extractApiError(res)
+            return
         }
 
-        await res.json().catch(() => null);
-        router.push('/login');
-    } catch (e) {
-        error.value = 'Network error. Please try again.';
+        // We don't need the body here; just navigate on success
+        await res.json().catch(() => null)
+        router.push('/login')
+    } catch {
+        error.value = 'Network error. Please try again.'
     } finally {
-        loading.value = false;
+        loading.value = false
     }
-};
+}
 </script>
 
 <template>
@@ -66,6 +72,7 @@ const handleSubmit = async () => {
 
             <p v-if="error" class="text-red-500 text-sm text-center">{{ error }}</p>
 
+            <!-- Inputs -->
             <input v-model="username" type="text" placeholder="Username" autocomplete="username"
                 class="w-full p-2 rounded bg-[#2a2a2a] text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cocktail-glow-light" />
             <input v-model="email" type="email" placeholder="Email" autocomplete="email"
@@ -73,16 +80,16 @@ const handleSubmit = async () => {
             <input v-model="password" type="password" placeholder="Password" autocomplete="new-password"
                 class="w-full p-2 rounded bg-[#2a2a2a] text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-cocktail-glow-light" />
 
+            <!-- Submit -->
             <button type="submit" :disabled="loading"
                 class="w-full bg-cocktail-glow-light hover:bg-cocktail-glow px-4 py-2 rounded text-white font-semibold disabled:opacity-60 disabled:cursor-not-allowed">
                 {{ loading ? 'Signing up...' : 'Sign Up' }}
             </button>
 
+            <!-- Link to login -->
             <p class="text-sm text-center text-gray-400">
                 Already have an account?
-                <RouterLink to="/login" class="text-cocktail-glow-light hover:underline">
-                    Log in
-                </RouterLink>
+                <RouterLink to="/login" class="text-cocktail-glow-light hover:underline">Log in</RouterLink>
             </p>
         </form>
     </div>
