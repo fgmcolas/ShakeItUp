@@ -1,4 +1,4 @@
-![CocktailCard](https://ibb.co/39gM32Zs)
+![CocktailCard](https://i.ibb.co/jPnWNmX5/Shake-It-Up-logo.png)
 
 ShakeItUp is a modern, responsive web app for discovering, creating, and rating cocktails. Built with **Vue 3**, **Tailwind CSS**, and a **Node.js + Express + MongoDB** backend, it lets you explore official and custom recipes based on your ingredients.
 
@@ -15,7 +15,7 @@ Try the app: [ShakeItUp](https://shake-it-up-neon.vercel.app) (opens in a new ta
 - Friendly introduction and quick navigation
 - Links to all main sections: Cocktails, Ingredients, Creation, Favorites
 
-![CocktailCard](https://ibb.co/m52MsCNb)
+![CocktailCard](https://i.ibb.co/XxKvBZYj/Dashboard.jpg)
 
 ### 🍹 Cocktail Cards
 
